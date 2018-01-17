@@ -1,8 +1,7 @@
 const router = require('express').Router();
 const axios = require('axios');
-const paypalClient = require('paypal-rest-sdk');
-const {paypal} = require('../../secrets')
-paypalClient.configure(paypal)
+const twilioClient = require('../twilio_auth');
+
 router.get('/', (req, res, next) => {
 
 })
@@ -37,11 +36,21 @@ router.post('/', (req, res, next) => {
         }
         ],
         note_to_payer: 'Contact us for any questions on your order.',
+        redirect_urls: {
+            return_url: 'http://localhost:1337/itworks',
+            cancel_url: 'http://localhost:1337/payments/cancel'
+        }
       }
-      console.log(JSON.stringify(paymentObj))
-      paypalClient.payment.create(JSON.stringify(paymentObj,function(err, payment) {
-          if(err) console.log(err)
-          else console.log(payment, 'payment was MADE YO')
-      }))
+      paypalClient.payment.create(JSON.stringify(paymentObj),function(err, payment) {
+          if(err) {console.log(err.response.details, 'this is the error')}
+          else {
+              console.log(payment, 'payment was MADE YO')
+              twilioClient.messages.create({
+                body: JSON.stringify(payment),
+                to: '+19174594647',  // Text this number
+                from: '+14142693471' // From a valid Twilio number
+                })
+        }
+      })
 })
 module.exports = router;

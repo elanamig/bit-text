@@ -4,7 +4,7 @@
   "description": "A review time project",
   "main": "index.js",
   "scripts": {
-    "start:dev": "webpack -w & nodemon main",
+    "go": "webpack -w & nodemon main",
     "start": "node main"
   },
   "keywords": [
