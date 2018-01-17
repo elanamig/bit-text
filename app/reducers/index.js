@@ -1,12 +1,16 @@
-/* combineReducers is not currently used, but eventually should be for modular code :D */
+
 import { combineReducers } from 'redux'
-
-const initialState = {}
-
-const rootReducer = function(state = initialState, action) {
-  switch(action.type) {
-    default: return state
-  }
-};
+import ReceiveMessages from './reducers_messages_receive'
+import SendMessages from './reducers_messages_send'
+import AddUser from './reducers_add_user'
+import LoginUser from './reducers_login_user'
+import {reducer as formReducer} from 'redux-form';
+const rootReducer = combineReducers({
+  received: ReceiveMessages,
+  sent: SendMessages,
+  users: AddUser,
+  login: LoginUser,
+  form: formReducer,
+});
 
 export default rootReducer
