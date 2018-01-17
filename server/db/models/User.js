@@ -21,7 +21,8 @@ module.exports = db.define('User', {
     },
     phone: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     }
 
 })

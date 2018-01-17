@@ -3,6 +3,7 @@ const apiRouter = require('express').Router()
 const db = require('../db')
 apiRouter.use('/twilio', require('./twilio'))
 apiRouter.use('/users', require('./users'))
+apiRouter.use('/paypal', require('./paypal'))
 apiRouter.get('/hello', (req, res) => {
 	console.log(req.session)
 	res.send('laksdjf')
