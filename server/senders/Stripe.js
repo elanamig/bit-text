@@ -5,26 +5,19 @@ class Stripe extends Platform {
         super();
         this.stripeClient = stripe(sKey);
     }
-    sendPayment(fromEmail, toEmail, amount, message, cb) {
-        super.lookupUsers(fromEmail, toEmail)
-        .then(users => {
-            const payer = users.payer;
-            const payee = users.payee;
-            if (payee && payer) {
-                const paymentObj = this.generatePaymentObject(payer.email, payee.stripeKey, amount, message);
-                const callbackFunc = super.generateCallbackFunction(payer, payee, amount, cb);
-                this.stripeClient.charges.create(paymentObj)
-                .then(charge => {
-                    console.log(charge)
-                    callbackFunc(null, charge)
-                })
-                .catch (err => callbackFunc(err, null))
-            } else {
-                cb(`USERS NOT FOUND ${fromEmail} or ${toEmail}`);
-            }
-        }).catch(console.log)
+
+    sendPayment(payer, payee, amount, message, transactionId, cb) {
+        console.log("calling stripe payment for transaction", transactionId)
+        const paymentObj = this.generatePaymentObject('elanamig@gmail.com', amount);
+        const callbackFunc = super.generateCallbackFunction(payer, payee, amount, transactionId, cb);
+        this.stripeClient.charges.create(paymentObj)
+            .then(charge => {
+                console.log(charge)
+                callbackFunc(null, charge)
+            })
+            .catch (err => callbackFunc(err, null))       
     }
-    generatePaymentObject(fromEmail, toStripe, paymentAmt, message) {
+    generatePaymentObject(toStripe, paymentAmt) {
         return {
             amount: paymentAmt,
             currency: 'usd',
