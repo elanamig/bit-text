@@ -43,8 +43,8 @@ User.findByPhoneAndPlatform = function (phone, platform) {
         if (!user) return null;
         return PaymentType.findByUserIdAndPlatform(user.id, platform)
         .then (paymentType => {
-            console.log("looking up payment type");
-            user.paymentType = paymentType;
+            console.log("looking up payment type for user id", user.id);
+            user['paymentType'] = paymentType;
             return user;
         }).catch(console.log)
     })

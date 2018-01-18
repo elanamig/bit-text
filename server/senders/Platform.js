@@ -35,7 +35,7 @@ module.exports = class Platform {
         })
     }
 
-    generateCallbackFunction(payer, payee, amount, cb) {
+    generateCallbackFunction(payer, payee, amount, transactionId, cb) {
         console.log(cb)
         return (err, payment) => {
             if(err) {
@@ -45,7 +45,7 @@ module.exports = class Platform {
                     to: payer.phone,  // Text this number
                     from: twilioClient.twilioPhone // From a valid Twilio number
                 })
-                cb('ERROR')
+                cb(transactionId, `${err}`)
                     
             } else {
                 console.log(twilioClient.twilioPhone)
@@ -59,7 +59,7 @@ module.exports = class Platform {
                     to: payer.phone,  // Text this number
                     from: twilioClient.twilioPhone // From a valid Twilio number
                 })
-                cb('SUCCESS') 
+                cb(transactionId, 'SUCCESS') 
             }
 
         }

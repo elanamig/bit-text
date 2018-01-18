@@ -7,11 +7,11 @@ class Paypal extends Platform {
         paypalClient.configure(paypal)
     }
     
-    sendPayment(payer, payee, amount, message, cb) {
+    sendPayment(payer, payee, amount, message, transactionId, cb) {
         console.log("cb in paypal", cb)
         console.log ("sending message in paypal: ", payer.paymentType.authkey, payee.paymentType.authkey)
         const paymentObj = this.generatePaymentObject(payer.paymentType.authkey, payee.paymentType.authkey, amount, message);
-        const callbackFunc = super.generateCallbackFunction(payer, payee, amount, cb);
+        const callbackFunc = super.generateCallbackFunction(payer, payee, amount, transactionId, cb);
         paypalClient.payment.create(paymentObj, callbackFunc)
     }
     
