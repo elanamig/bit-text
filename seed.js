@@ -6,14 +6,14 @@ const users = [
     {
         fullName: 'Elana Abelev',
         email: 'elanamig@gmail.com',
-        phone: '9174594647',
+        phone: '+19174594647',
         password: '12345678',
         countryCode: '+1'
     },
     {
         fullName: 'Shmuel Lotman',
         email: 'shmuel.lotman@gmail.com',
-        phone: '4142436597',
+        phone: '+14142436597',
         password: '12345678',
         countryCode: '+1'
     }

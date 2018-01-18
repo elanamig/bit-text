@@ -14,11 +14,11 @@ const Transaction = require('./Transaction');
 
 Message.belongsTo(User, {as: 'payer'});
 Message.belongsTo(User, {as: 'payee'});
-PaymentType.belongsTo(User);
+PaymentType.belongsTo(User, {as: 'user'});
 Transaction.belongsTo(User, {as: 'payer'});
 Transaction.belongsTo(User, {as: 'payee'});
-Transaction.belongsTo(PaymentType);
-Transaction.belongsTo(Message);
+Transaction.belongsTo(PaymentType, {as: 'paymentType'});
+Transaction.belongsTo(Message, {as: 'message'});
 
 
 
