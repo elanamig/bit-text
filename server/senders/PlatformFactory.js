@@ -1,4 +1,5 @@
 const PaypalPlatform = require('./Paypal');
+const StripePlatform = require ('./Stripe');
 const secrets = require('../../secrets');
 class PlatformFactory {
     static getPlatform(platform) {
@@ -15,7 +16,7 @@ class PlatformFactory {
                 platformInstance = new PaypalPlatform(secrets.paypal);
                 break;
             case this.STRIPE:
-                //platformInstance = new Stripe();
+                platformInstance = new StripePlatform(secrets.stripe.SKey);
                 break;
             default: return null;
         }

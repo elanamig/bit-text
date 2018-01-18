@@ -5,10 +5,6 @@ const User = require('../db').User;
 module.exports = class Platform {
     constructor () {
     }
-
-    getTwilioClient () {
-        return twilio;
-    }
     
     lookupUsers (fromEmail, toEmail) {
         const fromObj = User.findByEmail(fromEmail);
@@ -23,31 +19,28 @@ module.exports = class Platform {
         });
     }
 
-    getPhoneNumber () {
-        return twilioClient.twilioPhone;
-    }
-    generateCallbackFunction(payer, payee, twilioMain, amount, cb) {
+    generateCallbackFunction(payer, payee, amount, cb) {
         return (err, payment) => {
             if(err) {
                 console.log(err)
-                twilioClient.messages.create({
+                twilio.messages.create({
                     body: `Payment of ${amount} to ${payee.fullName} has FAILED. \n ${err}`,
                     to: payer.phone,  // Text this number
-                    from: super.getPhoneNumber() // From a valid Twilio number
+                    from: twilioClient.twilioPhone // From a valid Twilio number
                 })
                 cb('ERROR')
                     
             } else {
                 console.log(twilioClient.twilioPhone)
-                twilioMain.messages.create({
+                twilio.messages.create({
                     body: `You have received ${amount} from ${payer.fullName}`,
                     to: payee.phone,  // Text this number
-                    from: this.getPhoneNumber() // From a valid Twilio number
+                    from: twilioClient.twilioPhone // From a valid Twilio number
                 })
-                twilioMain.messages.create({
+                twilio.messages.create({
                     body: `Payment of ${amount} successfully sent to ${payee.fullName}`,
                     to: payer.phone,  // Text this number
-                    from: this.getPhoneNumber() // From a valid Twilio number
+                    from: twilioClient.twilioPhone // From a valid Twilio number
                 })
                 cb('SUCCESS') 
             }
