@@ -2,7 +2,7 @@
 const Sequelize = require('sequelize');
 const db = require('../index');
 
-module.exports = db.define('Messages', {
+module.exports = db.define('Message', {
     sender: {
         type: Sequelize.STRING,
         allowNull: false
