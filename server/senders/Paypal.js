@@ -14,7 +14,7 @@ class Paypal extends Platform {
             const payee = users.payee;
             if (payee && payer) {
                 const paymentObj = this.generatePaymentObject(payer.email, payee.email, amount, message);
-                const callbackFunc = super.generateCallbackFunction(payer, payee, super.getTwilioClient(), amount, cb);
+                const callbackFunc = super.generateCallbackFunction(payer, payee, amount, cb);
                 paypalClient.payment.create(paymentObj, callbackFunc)
             } else {
                 cb(`USERS NOT FOUND ${fromEmail} or ${toEmail}`);

@@ -1,9 +1,9 @@
-const {stripe} = require('../../secrets')
-const stripeClient = require('stripe')(stripe.SKey);
+const stripe = require ('stripe');
 const Platform = require('./Platform');
 class Stripe extends Platform {
-    constructor() {
-        super()
+    constructor(sKey) {
+        super();
+        this.stripeClient = stripe(sKey);
     }
     sendPayment(fromEmail, toEmail, amount, message, cb) {
         super.lookupUsers(fromEmail, toEmail)
@@ -12,9 +12,13 @@ class Stripe extends Platform {
             const payee = users.payee;
             if (payee && payer) {
                 const paymentObj = this.generatePaymentObject(payer.email, payee.stripeKey, amount, message);
-                const callbackFunc = super.generateCallbackFunction(payer, payee, super.getTwilioClient(), amount, cb);
-                stripeClient.charges.create(paymentObj)
-                .then(charge => callbackFunc())
+                const callbackFunc = super.generateCallbackFunction(payer, payee, amount, cb);
+                this.stripeClient.charges.create(paymentObj)
+                .then(charge => {
+                    console.log(charge)
+                    callbackFunc(null, charge)
+                })
+                .catch (err => callbackFunc(err, null))
             } else {
                 cb(`USERS NOT FOUND ${fromEmail} or ${toEmail}`);
             }
