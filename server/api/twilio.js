@@ -1,5 +1,5 @@
 const apiRouter = require('express').Router()
-const Messages = require('../db/models/Messages')
+const Message = require('../db/models/Message')
 const MessagingResponse = require('twilio').twiml.MessagingResponse;
 const Client = require('../twilio_auth');
 apiRouter.get('/', (req, res) => {
@@ -10,7 +10,7 @@ apiRouter.get('/', (req, res) => {
         })
 })
 apiRouter.post('/sms', (req, res) => {
-    Messages.create({sender: req.body.From, recipient: req.body.To, body: req.body.Body})
+    Message.create({sender: req.body.From, recipient: req.body.To, body: req.body.Body})
     .then(createdMessage => {
         const twiml = new MessagingResponse();
         twiml.message(`Created Message in Database Successfully, body of message was ${req.body.Body} `)

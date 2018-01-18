@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 const db = require('../index');
 
-module.exports = db.define('User', {
+const User = db.define('User', {
     countryCode: {
         type: Sequelize.STRING,
         allowNull: false
@@ -25,4 +25,12 @@ module.exports = db.define('User', {
         unique: true
     }
 
-})
+});
+
+User.findByEmail = function (email) {
+    return User.findOne ({
+        where: {email}
+    })
+}
+
+module.exports = User;

@@ -15,9 +15,9 @@ class PlatformFactory {
                 platformInstance = new PaypalPlatform(secrets.paypal);
                 break;
             case this.STRIPE:
-                platformInstance = new Stripe();
+                //platformInstance = new Stripe();
                 break;
-            default: throw new Error('Platform does not exist');
+            default: return null;
         }
         return platformInstance;
     }
@@ -25,3 +25,5 @@ class PlatformFactory {
 PlatformFactory.platforms = {};
 PlatformFactory.PAYPAL = 'PAYPAL';
 PlatformFactory.STRIPE = 'STRIPE';
+
+module.exports = PlatformFactory;
