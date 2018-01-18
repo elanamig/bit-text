@@ -43,21 +43,20 @@ const paymentType = [
 
 const seed = () => {
     const usersPromise = users.map(user => User.create(user));
-     Promise.all (usersPromise)
+     return Promise.all (usersPromise)
     .then( (userData) => {
         const paymentPromise = paymentType.map(type => PaymentType.create(type))
         console.log("Users created");
-        Promise.all(paymentPromise)
+       return Promise.all(paymentPromise)
         .then((payments) => {
-            let userArr = [];
-            payments.forEach((payment, i) => {
+            let userArr = payments.map((payment, i) => {
                 if(i < 2) {
-                    userArr.push(payment.setUser(userData[0]))
+                   return payment.setUser(userData[0])
                 } else {
-                    userArr.push(payment.setUser(userData[1]))
+                    return payment.setUser(userData[1])
                 }
             })
-            Promise.all(userArr).then(() => console.log('we done here?'))
+           return  Promise.all(userArr).then(() => console.log('we done here?'))
         }).catch(errFunc)
     })
     .catch(errFunc) ;
