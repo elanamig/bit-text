@@ -7,19 +7,12 @@ class Paypal extends Platform {
         paypalClient.configure(paypal)
     }
     
-    sendPayment(fromEmail, toEmail, amount, message, cb) {
-        super.lookupUsers(fromEmail, toEmail)
-        .then(users => {
-            const payer = users.payer;
-            const payee = users.payee;
-            if (payee && payer) {
-                const paymentObj = this.generatePaymentObject(payer.email, payee.email, amount, message);
-                const callbackFunc = super.generateCallbackFunction(payer, payee, amount, cb);
-                paypalClient.payment.create(paymentObj, callbackFunc)
-            } else {
-                cb(`USERS NOT FOUND ${fromEmail} or ${toEmail}`);
-            }
-        }).catch (console.log)
+    sendPayment(payer, payee, amount, message, transactionId, cb) {
+        console.log("cb in paypal", cb)
+        console.log ("sending message in paypal: ", payer.paymentType.authkey, payee.paymentType.authkey)
+        const paymentObj = this.generatePaymentObject(payer.paymentType.authkey, payee.paymentType.authkey, amount, message);
+        const callbackFunc = super.generateCallbackFunction(payer, payee, amount, transactionId, cb);
+        paypalClient.payment.create(paymentObj, callbackFunc)
     }
     
     generatePaymentObject (fromEmail, toEmail, amount, message) {

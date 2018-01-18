@@ -1,17 +1,18 @@
 const twilio = require ('../twilio_auth');
 const {twilioClient} = require('../../secrets') 
 const User = require('../db').User;
+const PaymentType = require ('../db').PaymentType;
 
 module.exports = class Platform {
     constructor () {
     }
     
-    lookupUsers (fromEmail, toEmail) {
-        const fromObj = User.findByEmail(fromEmail);
-        const toObj = User.findByEmail(toEmail);
+    lookupUsers (fromPhone, toPhone) {
+        const fromObj = User.findByPhone(fromPhone);
+        const toObj = User.findByPhone(toPhone);
         return Promise.all([fromObj, toObj])
         .then (users => {
-            const userObj = {
+           const userObj = {
                 payer: users[0],
                 payee: users[1]
             }
@@ -19,7 +20,23 @@ module.exports = class Platform {
         });
     }
 
-    generateCallbackFunction(payer, payee, amount, cb) {
+    verifyUsers (fromPhone, toPhone, fromPlatform, toPlatform) {
+        return lookupUsers (fromPhone, toPhone)
+        .then (users => {
+            if(! (users[0] || users[1] )) {
+                return new Promise((resolve, reject) => null)
+            }
+            const paymentLookup = users.map (user => PaymentType.findByUserIdAndPlatform (user.id));
+            return Promise.all(paymentLookup)
+            .then(payments => {
+                users[0].paymentType = payments[0];
+                users[0].paymentType = payments[1];
+            })
+        })
+    }
+
+    generateCallbackFunction(payer, payee, amount, transactionId, cb) {
+        console.log(cb)
         return (err, payment) => {
             if(err) {
                 console.log(err)
@@ -28,7 +45,7 @@ module.exports = class Platform {
                     to: payer.phone,  // Text this number
                     from: twilioClient.twilioPhone // From a valid Twilio number
                 })
-                cb('ERROR')
+                cb(transactionId, `${err}`)
                     
             } else {
                 console.log(twilioClient.twilioPhone)
@@ -42,7 +59,7 @@ module.exports = class Platform {
                     to: payer.phone,  // Text this number
                     from: twilioClient.twilioPhone // From a valid Twilio number
                 })
-                cb('SUCCESS') 
+                cb(transactionId, 'SUCCESS') 
             }
 
         }
