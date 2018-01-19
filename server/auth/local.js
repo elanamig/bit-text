@@ -7,7 +7,7 @@ router.post('/login', (req, res, next) => {
        where: {email, password}
    })
    .then((user) => {
-    if (!user) throw new Error(404 + 'user not found, try again!');
+    if (!user) res.send(`Invalid username or password`);
     else {
       req.login(user, (err) => {
           if(err) console.log(err, 'this is the error')

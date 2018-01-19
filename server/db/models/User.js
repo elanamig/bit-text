@@ -51,4 +51,5 @@ User.findByPhoneAndPlatform = function (phone, platform) {
     .catch (console.log);
 }
 
+
 module.exports = User;

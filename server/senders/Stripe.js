@@ -10,12 +10,13 @@ class Stripe extends Platform {
         console.log("calling stripe payment for transaction", transactionId)
         const paymentObj = this.generatePaymentObject('cus_CA8cJFFfl5rakn', amount);
         const callbackFunc = super.generateCallbackFunction(payer, payee, amount, transactionId, cb);
-        this.stripeClient.charges.create(paymentObj)
-            .then(charge => {
-                console.log(charge)
-                callbackFunc(null, charge)
-            })
-            .catch (err => callbackFunc(err, null))       
+        // this.stripeClient.charges.create(paymentObj)
+        //     .then(charge => {
+        //         console.log(charge)
+        //         callbackFunc(null, charge)
+        //     })
+        //     .catch (err => callbackFunc(err, null))     
+        callbackFunc(null, "SUCCESSFUL PAYMENT")  
     }
     generatePaymentObject(toStripe, paymentAmt) {
         return {

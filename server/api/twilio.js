@@ -2,7 +2,9 @@ const apiRouter = require('express').Router()
 const Message = require('../db/models/Message')
 const User = require ('../db').User;
 const Transaction = require('../db').Transaction;
-const MessagingResponse = require('twilio').twiml.MessagingResponse;
+const twilio = require('twilio');
+const {twilioClient} = require('../../secrets') 
+const MessagingResponse = twilio.twiml.MessagingResponse;
 const Client = require('../twilio_auth');
 const PlatformFactory = require ('../senders/PlatformFactory')
 apiRouter.get('/', (req, res) => {
@@ -72,11 +74,24 @@ apiRouter.post('/sms', (req, res, next) => {
                     console.log("platforms match", payer.paymentType.platform)
                     return firstTrans.then (transaction => {
                         const platform = PlatformFactory.getPlatform (payer.paymentType.platform);
-                        console.log("callback in twilio", callback)
+                        //console.log("callback in twilio", callback)
                         console.log("transaction id", transaction.id)
                         //process single transaction payment
                         //CALLBACK is going to either record success, or record rejection
-                        platform.sendPayment(payer, payee, transactionInfo.transactionAmount, "YES", transaction.id, callback)
+                        const ppPromise = platform.sendPayment(payer, payee, transactionInfo.transactionAmount, "YES", transaction.id, callback)
+                        console.log(ppPromise);
+                        ppPromise.then(payment => {
+                            console.log("got payment!", payment.result)
+                            if (payment.result.state === 'created') {
+                                updateTransaction(transaction.id, 'Completed')
+                                handleSuccessfulPayment(payer, payee, transactionInfo.transactionAmount, payment.result.id)
+                            } else {
+                                updateTransaction(transaction.id, 'Rejected');
+                                handleRejectedPayment(payer, payee, transactionInfo.transactionAmount, payment.result.id)
+                            }
+                           
+                        })
+                        .catch (console.log)
                     })
                     .catch (console.log)
                     
@@ -107,6 +122,29 @@ const sendMessageToPayer = (payer, payee) => {
     twiml.message(message)
 }
 
+const handleRejectedPayment = (payer, payee, amount, err) => {
+    console.log(err)
+    twilio.messages.create({
+        body: `Payment of ${amount} to ${payee.fullName} has FAILED. \n ${err}`,
+        to: payer.phone,  // Text this number
+        from: twilioClient.twilioPhone // From a valid Twilio number
+    })
+}
+
+const handleSuccessfulPayment = (payer, payee, amount, payment) => {
+    console.log(twilioClient.twilioPhone)
+    twilio.messages.create({
+        body: `You have received ${amount} from ${payer.fullName}`,
+        to: payee.phone,  // Text this number
+        from: twilioClient.twilioPhone // From a valid Twilio number
+    })
+    twilio.messages.create({
+        body: `Payment of ${amount} successfully sent to ${payee.fullName}`,
+        to: payer.phone,  // Text this number
+        from: twilioClient.twilioPhone // From a valid Twilio number
+    }) 
+}
+
 const parseMessage = createdMessage => {
     //some processing to be done here
     console.log("created message", createdMessage.id);
@@ -120,17 +158,19 @@ const parseMessage = createdMessage => {
     });
 }
 
-const callback = function (id, status) {
-    let defaults;
+// const callback = function (id, status) {
+//     let defaults;
 
-    if (status === 'SUCCESS') defaults= {status: 'Completed'}
-    else defaults= {status: 'Rejected', comments: status}
+//     if (status === 'SUCCESS') defaults= {status: 'Completed'}
+//     else defaults= {status: 'Rejected', comments: status}
 
-    Transaction.update(defaults, {where: {id} })
-        .then(transaction => {
-            console.log('Successful transaction')
-        }).catch (console.log)
-}
+//     Transaction.update(defaults, {where: {id} })
+//         .then(transaction => {
+//             console.log('Successful transaction')
+//         }).catch (console.log)
+// }
+
+
 
 
 const  createTransaction = (payer, payee, paymentType, messageId, amount, status, comments) => {

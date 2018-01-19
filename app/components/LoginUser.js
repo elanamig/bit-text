@@ -29,6 +29,9 @@ class LoginUser extends Component {
         const { handleSubmit } = this.props;
         return (
             <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
+                {
+                    this.props.loginErr?<span>Invalid username or password!</span>:<span/>
+                }
                 <Field 
                     name="email"
                     label="Email Address"
@@ -64,9 +67,13 @@ const mapDispatch = (dispatch, ownProps) => {
         }
     }
 }
+
+const mapState = state => ({
+    loginErr: state.login.loginErr
+})
 export default reduxForm({
     form: 'LoginUser',
     validate
 })(
-    connect(null, mapDispatch)(LoginUser)
+    connect(mapState, mapDispatch)(LoginUser)
 )
