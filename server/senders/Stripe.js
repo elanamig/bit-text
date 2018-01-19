@@ -8,7 +8,7 @@ class Stripe extends Platform {
 
     sendPayment(payer, payee, amount, message, transactionId, cb) {
         console.log("calling stripe payment for transaction", transactionId)
-        const paymentObj = this.generatePaymentObject('elanamig@gmail.com', amount);
+        const paymentObj = this.generatePaymentObject('cus_CA8cJFFfl5rakn', amount);
         const callbackFunc = super.generateCallbackFunction(payer, payee, amount, transactionId, cb);
         this.stripeClient.charges.create(paymentObj)
             .then(charge => {
@@ -19,13 +19,11 @@ class Stripe extends Platform {
     }
     generatePaymentObject(toStripe, paymentAmt) {
         return {
-            amount: paymentAmt,
+            amount: '20',
             currency: 'usd',
             source: 'tok_visa',
-              //this destination is the object that will allow for sending to specific destination users. I did not fully search through
-             //not sending to stripe, but as of now this is the best I could find.
             destination: {
-                account: toStripe
+                account: 'cus_CA8cJFFfl5rakn'
             }
         }
     }

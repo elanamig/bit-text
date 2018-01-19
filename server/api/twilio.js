@@ -65,11 +65,12 @@ apiRouter.post('/sms', (req, res, next) => {
                 .catch (console.err)
             //4.b - if both have the same payment type, process it accordingly
             } else { 
-                console.log("got payment types") 
+                console.log("got payment types");
+                const firstTrans =  createTransaction(payer, payee, payer.paymentType, transactionInfo.messageId, transactionInfo.transactionAmount, 'In-Progress', '')
+                    
                 if (payer.paymentType.platform === payee.paymentType.platform) {
                     console.log("platforms match", payer.paymentType.platform)
-                    createTransaction(payer, payee, payer.paymentType, transactionInfo.messageId, transactionInfo.transactionAmount, 'In-Progress', '')
-                    .then (transaction => {
+                    return firstTrans.then (transaction => {
                         const platform = PlatformFactory.getPlatform (payer.paymentType.platform);
                         console.log("callback in twilio", callback)
                         console.log("transaction id", transaction.id)
@@ -80,7 +81,7 @@ apiRouter.post('/sms', (req, res, next) => {
                     .catch (console.log)
                     
                 } else {
-                    //todo
+                   return;
                 }
             }
         })
@@ -114,7 +115,7 @@ const parseMessage = createdMessage => {
     return ({
         to: fields[0],
         transactionAmount: fields[1],
-        platform: fields[2],
+        platform: fields[2]?fields[2].toUpperCase():null,
         originalMessage: createdMessage
     });
 }
