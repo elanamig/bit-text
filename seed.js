@@ -40,6 +40,22 @@ const paymentType = [
         isDefault: 'false'
     }
 ]
+const messages = [
+    {
+        sender: '+14142436597',
+        recipient: '+19174594647',
+        body: 'Paypal Elana Abelev 300.00',
+        payerId: 2,
+        payeeId: 1
+    },
+    {
+        sender: '+14142436597',
+        recipient: '+19174594647',
+        body: 'Paypal Elana Abelev 30.00',
+        payerId: 2,
+        payeeId: 1
+    }
+]
 
 const seed = () => {
     const usersPromise = users.map(user => User.create(user));
@@ -56,7 +72,11 @@ const seed = () => {
                     return payment.setUser(userData[1])
                 }
             })
-           return  Promise.all(userArr).then(() => console.log('we done here?'))
+           return  Promise.all(userArr).then(() => {
+               const messagesPromise = messages.map(msg => Message.create(msg))
+               return Promise.all(messagesPromise)
+               .then(msgs => console.log('SEEDED YO'))
+           })
         }).catch(errFunc)
     })
     .catch(errFunc) ;
