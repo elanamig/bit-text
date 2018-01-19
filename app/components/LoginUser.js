@@ -3,7 +3,6 @@ import {Field, reduxForm} from 'redux-form';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { loginUser } from '../reducers/reducers_login_user';
-import store from '../store';
 class LoginUser extends Component {
     renderField(field) {
         const { meta: {touched, error} } = field;
@@ -23,9 +22,7 @@ class LoginUser extends Component {
         )
     }
     onSubmit(values) {
-      const postAction =  loginUser(values);
-        store.dispatch(postAction)
-        this.props.history.push('/')
+      this.props.loginuser(values)
     }
     render() { 
         console.log(this.props)
@@ -60,9 +57,16 @@ const validate = (values) => {
     }
     return errors
 }
+const mapDispatch = (dispatch, ownProps) => {
+    return {
+        loginuser(user) {
+            dispatch(loginUser(user, ownProps.history))
+        }
+    }
+}
 export default reduxForm({
     form: 'LoginUser',
     validate
 })(
-    connect(null, null)(LoginUser)
+    connect(null, mapDispatch)(LoginUser)
 )
