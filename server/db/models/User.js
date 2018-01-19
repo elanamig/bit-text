@@ -51,5 +51,18 @@ User.findByPhoneAndPlatform = function (phone, platform) {
     .catch (console.log);
 }
 
+User.findPlatformUser = () => {
+    return User.findOne({where: {email: 'bittext123@gmail.com'}})
+    .then(user =>   {
+     if (!user) return null;
+        return PaymentType.findByUserIdAndPlatform(user.id, 'PAYPAL')
+        .then (paymentType => {
+         console.log("looking up payment type for user id", user.id);
+        user['paymentType'] = paymentType;
+        console.log(user, paymentType, 'user and paymenttype log')
+        return user;
+    }).catch(console.log)
+})
+}
 
 module.exports = User;
