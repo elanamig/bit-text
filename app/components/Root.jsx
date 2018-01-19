@@ -6,6 +6,7 @@ import MessageInbox from './MessageInbox';
 import SignupUser from './SignupUser';
 import {fetchCurrentUser, logoutUser} from '../reducers/reducers_login_user';
 import { Image, Segment, Menu, Header, Container, Button, Visibility, Icon } from 'semantic-ui-react'
+import Typist from 'react-typist';
 
 class Root extends Component {
   componentDidMount() {
@@ -40,13 +41,19 @@ class Root extends Component {
         <Container text>
           <Header
             as='h1'
-            content= 'WELCOME'
             inverted
             style={{ fontSize: '4em', fontWeight: 'normal', marginBottom: 0, marginTop: '3em' }}
-          />
+          ><Typist cursor={{hideWhenDone: true}}>
+          <span>The Era of A Dozen Scattered Payment Apps is Over.</span>
+              <Typist.Backspace count={50} delay={1000} />
+            <span>All Your Transactions, In One Place, Over Secure Text. </span>
+            <Typist.Backspace count={59} delay={1000} />
+            <span>Welcome to BitText.</span>
+        </Typist>
+           </Header>
           <Header
             as='h2'
-            content='Do whatever you want when you want to.'
+            content='Pay The Convenient Way.'
             inverted
             style={{ fontSize: '1.7em', fontWeight: 'normal' }}
           />

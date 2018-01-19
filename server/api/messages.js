@@ -1,31 +1,26 @@
-const router = require ('express').Router();
-const Message = require ('../db/models');
-module.exports = router;
+const router = require('express').Router();
+const Message = require('../db/models/Message');
+const User = require('../db/models/User');
 
 router.get('/', (req, res, next) => {
-    if (req.user && req.user.id) {
-        const userId = req.user.id;
-        const type = req.params.type;
-        let msgProm;
-        if (!type) {
-            msgProm = Message.findAllByUserId(userId)
-        }
-        if (type === 'in') {
-            msgProm = Message.findAllByUserId(userId, false, true)
-        } else {
-            msgProm = Message.findAllByUserId(userId, true, false)
-        }
-
-        msgProm.then (res.json).catch (next);
-    } else {
-        res.status(401).send("Must be logged in to see messages")
-    }
+    console.log(req.user.phone)
+    Message.findAll({ 
+        where: {payeeId: req.user.id},
+        include: [
+            {model: User, as: 'payer' , attributes: ['fullName', 'email', 'phone']}
+        ]
+    
+    })
+    .then(messages => {
+        console.log('these are msgs', messages)
+        res.send(messages)
+    })
+    .catch(next)
+})
+router.delete('/:id', (req, res, next) => {
+    Message.destroy({where: {id: req.body.id}}).then(() => console.log('deleted number: ' + req.body.id))
 })
 
-router.get('/:id', (req, res, next) => {
-    if (req.user && req.user.id) {
-        Message.findByIdAndUserId(req.params.id, req.user.id).then (res.json).catch(next)
-    } else {
-        res.status(401).send("Must be logged in to see messages")
-    }
-})
+module.exports = router;
+
+
