@@ -5,6 +5,9 @@ apiRouter.use('/twilio', require('./twilio'))
 apiRouter.use('/users', require('./users'))
 apiRouter.use('/paypal', require('./paypal'))
 apiRouter.use('/test', require ('./test'));
+apiRouter.use('/messages', require('./messages'));
+apiRouter.use('/transactions', require('./transactions'));
+
 apiRouter.get('/hello', (req, res) => {
 	console.log(req.session)
 	res.send('laksdjf')

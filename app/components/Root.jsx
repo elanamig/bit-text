@@ -29,7 +29,7 @@ class Root extends Component {
             <Menu.Item><a href="https://github.com/ShmuelLotman/BitText">Github Source</a></Menu.Item>
             <Menu.Item position='right'>
             {
-              this.props.login.currentUser  ? <Link to='/login'><Button inverted>Log in</Button></Link>
+              !this.props.login.currentUser  ? <Link to='/login'><Button inverted>Log in</Button></Link>
               : <Button inverted onClick={() => this.props.logout()}>Log Out</Button>
             }  
               <Link to='/signup'><Button inverted style={{ marginLeft: '0.5em' }}>Sign Up</Button></Link>

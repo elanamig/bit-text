@@ -4,3 +4,6 @@ import loggingMiddleware from 'redux-logger'; // https://github.com/evgenyrodion
 import thunkMiddleware from 'redux-thunk'; // https://github.com/gaearon/redux-thunk
 import { composeWithDevTools } from 'redux-devtools-extension';
 export default createStore(rootReducer, composeWithDevTools(applyMiddleware(thunkMiddleware, loggingMiddleware)))
+
+//do all imports/exports here
+export * from '../reducers/reducers_messages_receive';

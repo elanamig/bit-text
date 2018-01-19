@@ -3,6 +3,7 @@ import axios from 'axios';
 const LOGIN_USER = 'LOGIN_USER';
 const LOGOUT_USER = 'LOGOUT_USER';
 const FETCH_CURRENT_USER = 'FETCH_CURRENT_USER';
+const LOGIN_ERR = 'LOGIN_ERR';
 
 const login = (user) => ({
     type: LOGIN_USER,
@@ -17,14 +18,23 @@ const setCurrentUser = (user) => ({
     user
 })
 
+const loginErr = () => ({
+    type: LOGIN_ERR
+})
+
 export function loginUser(user, history) {
     return function thunk(dispatch) {
         return axios.post('/auth/local/login', user)
         .then(res => res.data)
         .then(data => {
-            const action = login(user);
-            dispatch(action)
-            history.push('/')
+            if (typeof data === 'string' && data.indexOf('Invalid') >= 0) {
+                dispatch (loginErr())
+            } else {
+                const action = login(user);
+                dispatch(action)
+                history.push('/')
+            }
+            
         })
     }
 }
@@ -39,17 +49,24 @@ export function logoutUser() {
 export default function LoginReducer(state = {}, action) {
     switch(action.type) {
         case LOGIN_USER: 
-        return {
-            ...state, activeUser: action.user
-        }
+            return {
+                ...state, activeUser: action.user, loginErr: false
+            }
         case LOGOUT_USER:
-        return {
-            ...state, currentUser: {}
-        }
+            return {
+                ...state, currentUser: {}, loginErr: false
+            }
         case FETCH_CURRENT_USER:
-        return {
-            ...state, currentUser: action.user
-        }
+            return {
+                ...state, currentUser: action.user, loginErr: false
+            }
+
+        case LOGIN_ERR:
+            return {
+                ...state, loginErr: true
+            }
+
+
         default: 
         return state
     }

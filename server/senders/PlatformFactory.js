@@ -1,4 +1,4 @@
-const PaypalPlatform = require('./Paypal');
+const PaypalPlatform = require('./PaypalPromise');
 const StripePlatform = require ('./Stripe');
 const DwollaPlatform = require ('./Dwolla');
 const secrets = require('../../secrets');
