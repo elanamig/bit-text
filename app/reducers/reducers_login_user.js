@@ -8,27 +8,34 @@ const login = (user) => ({
     type: LOGIN_USER,
     user
 })
-const logout = (user) => ({
-    type: LOGOUT_USER,
-    user
+const logout = () => ({
+    type: LOGOUT_USER
+    
 })
 const setCurrentUser = (user) => ({
     type: FETCH_CURRENT_USER,
     user
 })
 
-export function loginUser(user) {
+export function loginUser(user, history) {
     return function thunk(dispatch) {
-        return axios.put('/auth/local/login', user)
+        return axios.post('/auth/local/login', user)
         .then(res => res.data)
         .then(data => {
-            console.log(data)
             const action = login(user);
             dispatch(action)
+            history.push('/')
         })
     }
 }
-
+export function logoutUser() {
+    return function thunk(dispatch) {
+        return axios.post('/auth/local/logout')
+        .then(() => {
+            dispatch(logout())
+        })
+    }
+}
 export default function LoginReducer(state = {}, action) {
     switch(action.type) {
         case LOGIN_USER: 
@@ -37,7 +44,7 @@ export default function LoginReducer(state = {}, action) {
         }
         case LOGOUT_USER:
         return {
-            ...state, activeUser: null
+            ...state, currentUser: {}
         }
         case FETCH_CURRENT_USER:
         return {
@@ -51,8 +58,8 @@ export default function LoginReducer(state = {}, action) {
 export const fetchCurrentUser = () => dispatch => {
     axios.get('/auth/local/me')
       .then(res => {
-          console.log(res.data)
-          setCurrentUser(res.data)
+          console.log(res.data, 'this is the data')
+          dispatch(setCurrentUser(res.data))
         })
       .catch(err => console.error('Fetching current user failed', err));
   };

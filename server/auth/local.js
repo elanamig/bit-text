@@ -1,26 +1,31 @@
 const router = require('express').Router();
 const Users = require('../db/models/User');
-router.put('/login', (req, res, next) => {
+router.post('/login', (req, res, next) => {
+    console.log('this is the body', req.body)
    const {email, password} = req.body;
    Users.findOne({
        where: {email, password}
    })
-   .then(function (user) {
+   .then((user) => {
     if (!user) throw new Error(404 + 'user not found, try again!');
     else {
-      req.session.user = user;
+      req.login(user, (err) => {
+          if(err) console.log(err, 'this is the error')
+          else res.send(user)
+      })
       res.end(); // 200 is the default statues!
     }
   })
   .catch(next);
 })
-router.delete('/logout', (req, res, next) => {
-    req.session.destroy()
+
+router.post('/logout', (req, res, next) => {
+    req.logout()
     res.send(204)
 })
 router.get('/me', (req, res, next) => {
     console.log(req.user, 'user')
-    res.send(req.session.user)
+    res.json(req.user)
 })
 
 module.exports = router;

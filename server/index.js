@@ -7,7 +7,7 @@ const bodyParser = require('body-parser')
 const session = require('express-session')
 const passport = require('passport')
 const app = express();
-
+const User = require('./db/models/user')
 //logging middleware
 app.use(volleyball);
 
