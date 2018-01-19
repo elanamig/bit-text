@@ -3,7 +3,7 @@ const axios = require('axios');
 const dwolla = require ('dwolla-v2');
 
 const secrets = require('../../secrets');
-const dwollaClient = new dwolla.Client(secrets.dwolla)
+//const dwollaClient = new dwolla.Client(secrets.dwolla)
 
 const PlatformFactory = require ('../senders/PlatformFactory');
 
