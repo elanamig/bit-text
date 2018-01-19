@@ -16,6 +16,13 @@ const users = [
         phone: '+14142436597',
         password: '12345678',
         countryCode: '+1'
+    },
+    {
+        fullName: 'BitText',
+        email: 'bittext123@gmail.com',
+        phone: '+14142693471',
+        password: 'adminpassword',
+        countryCode: '+1'
     }
 ]
 const paymentType = [
@@ -38,6 +45,11 @@ const paymentType = [
         platform: 'STRIPE',
         authkey: 'pk_test_cgPI7VB68cXDrymX5rksQCyW',
         isDefault: 'false'
+    },
+    {
+        platform: 'PAYPAL',
+        authkey: 'bittext123@gmail.com',
+        isDefault: 'true'
     }
 ]
 const messages = [
@@ -68,8 +80,10 @@ const seed = () => {
             let userArr = payments.map((payment, i) => {
                 if(i < 2) {
                    return payment.setUser(userData[0])
-                } else {
+                } else if(i < 4) {
                     return payment.setUser(userData[1])
+                } else {
+                    return payment.setUser(userData[2])
                 }
             })
            return  Promise.all(userArr).then(() => {

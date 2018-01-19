@@ -1,13 +1,30 @@
 const apiRouter = require('express').Router()
 const Message = require('../db/models/Message')
-const User = require ('../db').User;
-const Transaction = require('../db').Transaction;
-const twilio = require('twilio');
+const User = require ('../db').User
+const Transaction = require('../db').Transaction
+const twilio = require('twilio')
 const {twilioClient} = require('../../secrets') 
-const MessagingResponse = twilio.twiml.MessagingResponse;
+const MessagingResponse = twilio.twiml.MessagingResponse
 const Client = require('../twilio_auth');
+const CentralWallet = require('../wallet')
 const PlatformFactory = require ('../senders/PlatformFactory')
+const CentralUser= {
+    id: 3,
+    countryCode: '+1',
+    email: 'bittext123@gmail.com',
+    fullName: 'BitText',
+    password: 'adminpassword',
+    phone: '+14142693471',
+    paymentType:   { id: 5,
+        platform: 'PAYPAL',
+        authkey: 'bittext123@gmail.com',
+        isDefault: true,
+        userId: 3 
+     }
+}
+
 apiRouter.get('/', (req, res) => {
+    User.findPlatformUser();
     Client.messages.create({
         body: 'Thank you for sending the preceding message!',
         to: '',  // Text this number
@@ -72,30 +89,15 @@ apiRouter.post('/sms', (req, res, next) => {
                     
                 if (payer.paymentType.platform === payee.paymentType.platform) {
                     console.log("platforms match", payer.paymentType.platform)
-                    return firstTrans.then (transaction => {
-                        const platform = PlatformFactory.getPlatform (payer.paymentType.platform);
-                        //console.log("callback in twilio", callback)
-                        console.log("transaction id", transaction.id)
-                        //process single transaction payment
-                        //CALLBACK is going to either record success, or record rejection
-                        const ppPromise = platform.sendPayment(payer, payee, transactionInfo.transactionAmount, "YES", transaction.id, callback)
-                        console.log(ppPromise);
-                        ppPromise.then(payment => {
-                            console.log("got payment!", payment.result)
-                            if (payment.result.state === 'created') {
-                                updateTransaction(transaction.id, 'Completed')
-                                handleSuccessfulPayment(payer, payee, transactionInfo.transactionAmount, payment.result.id)
-                            } else {
-                                updateTransaction(transaction.id, 'Rejected');
-                                handleRejectedPayment(payer, payee, transactionInfo.transactionAmount, payment.result.id)
-                            }
-                           
-                        })
-                        .catch (console.log)
-                    })
-                    .catch (console.log)
-                    
+                    sendTransaction(payer, payee, transactionInfo)
+                    .then((successStatus) => console.log('payment was ' + successStatus ? 'successfull' : 'failed like you'))
                 } else {
+                    
+                    //If the platforms are not the same, utilize the central wallet (which mocks a bank account) to transfer
+                    //1. route payment from sender to wallet. 
+                    //2. if step 1 succeeds, then pay second half.
+                    //3. if step 1 fails, then refund sender.
+
                    return;
                 }
             }
@@ -171,7 +173,32 @@ const parseMessage = createdMessage => {
 // }
 
 
-
+const sendTransaction = (payer, payee, transactionInfo) => {
+    return firstTrans.then (transaction => {
+        const platform = PlatformFactory.getPlatform (payer.paymentType.platform);
+        //console.log("callback in twilio", callback)
+        console.log("transaction id", transaction.id)
+        //process single transaction payment
+        //CALLBACK is going to either record success, or record rejection
+        const ppPromise = platform.sendPayment(payer, payee, transactionInfo.transactionAmount, "YES", transaction.id, callback)
+        console.log(ppPromise);
+        return ppPromise.then(payment => {
+            console.log("got payment!", payment.result)
+            if (payment.result.state === 'created') {
+                updateTransaction(transaction.id, 'Completed')
+                handleSuccessfulPayment(payer, payee, transactionInfo.transactionAmount, payment.result.id)
+                return true;
+            } else {
+                updateTransaction(transaction.id, 'Rejected');
+                handleRejectedPayment(payer, payee, transactionInfo.transactionAmount, payment.result.id)
+                return false;
+            }
+           
+        })
+        .catch (console.log)
+    })
+    .catch (console.log)
+}
 
 const  createTransaction = (payer, payee, paymentType, messageId, amount, status, comments) => {
     console.log("Creating transacton for message", messageId)
