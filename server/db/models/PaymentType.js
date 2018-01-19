@@ -3,7 +3,7 @@ const db = require('../index');
 
 const PaymentType = db.define('PaymentType', {
     platform: {
-        type: Sequelize.ENUM('STRIPE', 'PAYPAL'),
+        type: Sequelize.ENUM('STRIPE', 'PAYPAL', 'DWOLLA'),
         allowNull: false
     },
     authkey: {

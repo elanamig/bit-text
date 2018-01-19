@@ -25,8 +25,8 @@ const paymentType = [
         isDefault: 'true'
     },
     {
-        platform: 'STRIPE',
-        authkey: 'pk_test_wAVx4RwXFouYPAPajD91zzHb',
+        platform: 'DWOLLA',
+        authkey: 'b0ab9549-6e22-4734-a5bb-3e22c6f77c8f',
         isDefault: 'false'
     },
     {
