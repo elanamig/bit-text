@@ -18,7 +18,7 @@ Message.belongsTo(User, {as: 'payee'});
 PaymentType.belongsTo(User, {as: 'user'});
 Transaction.belongsTo(User, {as: 'payer'});
 Transaction.belongsTo(User, {as: 'payee'});
-Transaction.belongsTo(PaymentType, {as: 'paymentType'});
+//Transaction.belongsTo(PaymentType, {as: 'paymentType'});  //removed because each user has their own payment type
 Transaction.belongsTo(Message, {as: 'message'});
 Wallet.belongsTo(Transaction);
 

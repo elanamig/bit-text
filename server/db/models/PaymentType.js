@@ -17,14 +17,17 @@ const PaymentType = db.define('PaymentType', {
 })
 
 PaymentType.findByUserIdAndPlatform = function (userId, platform) {
+    console.log("PaymentType - find by userId and platform")
     if (platform) {
+        console.log("PaymentPlatform:  looking up user by platform");
         return PaymentType.findOne ({
             where: { userId, platform: platform.toUpperCase()}
-        })
+        }).catch(err => null)
     } else {
+        console.log("PaymentPlatform:  looking up user by default");
         return PaymentType.findOne ({
             where: {userId, isDefault: true}
-        })
+        }).catch (err => null)
     }
 }
 module.exports = PaymentType
