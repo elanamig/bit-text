@@ -3,22 +3,23 @@ const Message = require('../db/models/Message');
 const User = require('../db/models/User');
 
 router.get('/', (req, res, next) => {
-    console.log(req.user.phone)
-    Message.findAll({ 
-        where: {payeeId: req.user.id},
-        include: [
-            {model: User, as: 'payer' , attributes: ['fullName', 'email', 'phone']}
-        ]
-    
-    })
-    .then(messages => {
-        console.log('these are msgs', messages)
-        res.send(messages)
+    console.log("got message request.  userLoggedIn", req.user?"yes":"no")
+    if (req.user) {  
+        const find = req.query.payee === 'true'?Message.findAllPayee(req.user.id):Message.findAllPayer(req.user.id)
+        find
+        .then(messages => res.json(messages))
+        .catch(next)
+    } else {
+        res.send(null);
+    }
+})
+router.put('/:id', (req, res, next) => {
+    console.log("got put request", req.body, req.user.id, req.params.id)
+    Message.removeFromView (req.user.id, req.params.id, req.body.payee).then(message => { 
+        console.log('deleted number: ' + message[0], message[0]?"true":"false")
+        res.json(message[0]);
     })
     .catch(next)
-})
-router.delete('/:id', (req, res, next) => {
-    Message.destroy({where: {id: req.body.id}}).then(() => console.log('deleted number: ' + req.body.id))
 })
 
 module.exports = router;

@@ -2,7 +2,9 @@
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const db = require('../index');
-
+const User = require ('./User');
+const Transaction = require ('./Transaction');
+const PaymentType = require ('./PaymentType');
 const Message = db.define('Message', {
     sender: {
         type: Sequelize.STRING,
@@ -15,6 +17,10 @@ const Message = db.define('Message', {
     body: {
         type: Sequelize.TEXT,
         allowNull: true
+    },
+    display: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true
     }
 })
 
@@ -28,6 +34,46 @@ Message.findAllByUserId = (userId, isPayer, isPayee) => {
     return Message.findAll({where, order: [['createdAt', 'DESC']]})
 }
 
+Message.findAllPayee = (userId) => {
+    return Message.findAll ({ 
+        where: {
+            payeeId: userId, 
+            payerId: {
+                [Op.not]: null
+            },
+            display: true
+        },
+        include: [
+            {model: User, as: 'payer' , attributes: ['fullName', 'email', 'phone']},
+            {model: Transaction, include: [
+                {model: PaymentType, as: 'paymentType', attributes: ['platform']}
+            ], where: {payeeId: userId}, required: false
+            }
+        ],
+        order: [['createdAt', 'DESC']]
+    })
+}
+
+Message.findAllPayer = (userId) => {
+    return Message.findAll ({ 
+        where: {
+            payerId: userId, 
+            payeeId: {
+                [Op.not]: null
+            },
+            display: true
+        },
+        include: [
+            {model: User, as: 'payee' , attributes: ['fullName', 'email', 'phone']},
+            {model: Transaction, include: [
+                {model: PaymentType, as: 'paymentType', attributes: ['platform']}
+            ], where: {payerId: userId}, required: false
+            }
+        ],
+        order: [['createdAt', 'DESC']]
+    })
+}
+
 Message.findByIdAndUserId = (id, userId) => {
     return Message.findOne ({
         where: {
@@ -37,4 +83,17 @@ Message.findByIdAndUserId = (id, userId) => {
     })
 }
 
+Message.removeFromView = (userId, id, payee) => {
+    const where = payee?{
+        id,
+        payeeId: userId
+    }:{
+        id,
+        payerId: userId
+    }
+    return Message.update({display:false},{where}).then(msg => {
+        console.log("updated message to display false?", msg);
+        return msg;
+    })
+}
 module.exports = Message;

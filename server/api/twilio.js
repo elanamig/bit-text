@@ -6,7 +6,8 @@ const Transaction = require('../db').Transaction
 const twilioClientSecrets = require('../../secrets').twilioClient
 const MessagingResponse = require('twilio').twiml.MessagingResponse
 const twilioClient = require('../twilio_auth');
-const CentralWallet = require('../wallet')
+const Wallet = require('../wallet');
+const CentralWallet = new Wallet();
 const PlatformFactory = require ('../senders/PlatformFactory')
 const CentralUser= {
     id: 3,
@@ -107,19 +108,26 @@ apiRouter.post('/sms', (req, res, next) => {
                     .then (paymentStatus => {
                         //2. if step 1 succeeds, then pay second half.
                         if (paymentStatus.result.state === 'created') {
+                            CentralWallet.receivePayment(transactionInfo.transactionAmount, payer.paymentType.platform, paymentStatus.transactionId)
                             CentralUser.paymentType = CentralUser.paymentTypes.find(type=>type.platform === payee.paymentType.platform);
                             return sendTransaction(CentralUser, payee, transactionInfo)
                             .then (payment => {
                                 console.log("payment for first transaction", payment)
                                 if (payment.result.state === 'created') {
+                                    CentralWallet.sendPayment(transactionInfo.transactionAmount, payee.paymentType.platform,payment.transactionId)
                                     return handleSuccessfulPayment(payer, payee, transactionInfo.transactionAmount, payment.result.id)
                                 } else {
                                     // if step 2 fails, then refund the sender
                                     return sendTransaction (CentralUser, payer, transactionInfo)
-                                           .then (refundPayment => 
-                                               refundPayment.result.state === 'created'? handleRejectedPayment(payer, payee, transactionInfo.transactionAmount, parefundPaymentyment.result.id)
-                                                : console.log("WE HAVE A PROBLEM, UNABLE TO REFUND", payer, payee, transactionInfo)
-                                           )
+                                           .then (refundPayment => {
+                                               if (refundPayment.result.state === 'created') {
+                                                   return handleRejectedPayment(payer, payee, transactionInfo.transactionAmount, parefundPaymentyment.result.id)
+                                                   CentralWallet.sendPayment(transactionId.transactionAmount, payer.payeePaymentType.platform, refundPayment.transactionId)
+                                               } else {
+                                                   console.log("WE HAVE A PROBLEM, UNABLE TO REFUND", payer, payee, transactionInfo)
+                                                   return;
+                                               }
+                                           })
                                         }  
                             })
                         }
@@ -200,21 +208,23 @@ const sendTransaction = (payer, payee, transactionInfo) => {
             console.log(ppPromise);
             return ppPromise.then(payment => {
                 console.log("got payment!", payment.result)
+                payment.transactionId = transaction.id
                 const status = payment.result.state === 'created' ? 'Completed' : 'Rejected';
                 return updateTransaction(transaction.id, status).then( () => payment)
                  })
         }).catch (console.log)
 }
 
-const  createTransaction = (payer, payee, /*paymentType,*/ messageId, amount, status, comments) => {
-    console.log("Creating transacton for message messageId, payer.id, payee.id", messageId, payer.id, payee.id)
+const  createTransaction = (payer, payee, /*paymentType,*/ MessageId, amount, status, comments) => {
+    console.log("Creating transacton for message messageId, payer.id, payee.id", MessageId, payer.id, payee.id)
     const props = {
         status, 
         comments, 
         amount, 
         payeeId: payee.id,
         payerId: payer.id,
-        messageId
+        MessageId,
+        paymentTypeId: payer.paymentType?payer.paymentType.id:null
     }
 
     //if (paymentType) props['paymentTypeId'] = paymentType.id

@@ -1,4 +1,4 @@
-const WalletTable = require('../db/models');
+const WalletTable = require('../db/models').Wallet;
 
 class Wallet {
     constructor () {
@@ -10,7 +10,7 @@ class Wallet {
     }
     sendPayment(amount, platform, transactionId) {
         this.net -= amount;
-        this.store(amt, platform, transactionId, true)
+        this.store(amount, platform, transactionId, true)
     }
     store(amount, platform, transactionId, isDebit) {
         WalletTable.create({amount, platform, transactionId, isDebit}).then(() => console.log('GREAT SUCCESS'))

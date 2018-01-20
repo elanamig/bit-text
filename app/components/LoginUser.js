@@ -29,9 +29,6 @@ class LoginUser extends Component {
         const { handleSubmit } = this.props;
         return (
             <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
-                {
-                    this.props.loginErr?<span>Invalid username or password!</span>:<span/>
-                }
                 <Field 
                     name="email"
                     label="Email Address"
@@ -40,8 +37,10 @@ class LoginUser extends Component {
                 <Field 
                     name="password"
                     label="Password"
+                    type="password"
                     component={this.renderField}
                 />
+                {this.props.loginErr && <strong>Invalid username or password!</strong>}
                 <button type="submit" className="btn btn-primary">Submit</button>
             </form>
         )

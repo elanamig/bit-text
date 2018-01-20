@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import {Link} from 'react-router-dom';
 import SendMessage from './SendMessage';
 import MessageInbox from './MessageInbox';
+import MessageOutbox from './MessageOutbox';
 import SignupUser from './SignupUser';
 import {fetchCurrentUser, logoutUser} from '../reducers/reducers_login_user';
 import { Image, Segment, Menu, Header, Container, Button, Visibility, Icon } from 'semantic-ui-react'
@@ -26,14 +27,18 @@ class Root extends Component {
           <Menu inverted pointing secondary size='large'>
             <Menu.Item active>Home</Menu.Item>
             <Menu.Item><Link to='/inbox'>Inbox</Link></Menu.Item>
-            <Menu.Item><Link to='/messages'>Go To Send Messages</Link></Menu.Item>
+            <Menu.Item><Link to='/outbox'>Outbox</Link></Menu.Item>
             <Menu.Item><a href="https://github.com/ShmuelLotman/BitText">Github Source</a></Menu.Item>
             <Menu.Item position='right'>
             {
               !this.props.login.currentUser  ? <Link to='/login'><Button inverted>Log in</Button></Link>
               : <Button inverted onClick={() => this.props.logout()}>Log Out</Button>
-            }  
-              <Link to='/signup'><Button inverted style={{ marginLeft: '0.5em' }}>Sign Up</Button></Link>
+            } 
+            {
+              !this.props.login.currentUser  ? <Link to='/signup'><Button inverted>Sign Up</Button></Link>
+              : <Link to='/account'><Button style={{ marginLeft: '0.5em' }} inverted>Account</Button></Link>
+            } 
+              
             </Menu.Item>
           </Menu>
         </Container>
