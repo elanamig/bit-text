@@ -8,6 +8,7 @@ import store from './store/index'
 import Root from './components/Root'
 import SendMessage from './components/SendMessage'
 import MessageInbox from './components/MessageInbox'
+import MessageOutbox from './components/MessageOutbox'
 import SignupUser from './components/SignupUser'
 import LoginUser from './components/LoginUser'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -19,6 +20,7 @@ ReactDOM.render(
      <Route exact path='/' component={Root}/>
      <Route exact path='/sendMessage' component={SendMessage} />
      <Route exact path='/inbox' component={MessageInbox} />
+     <Route exact path='/outbox' component={MessageOutbox} />
      <Route exact path='/signup' component={SignupUser} />
      <Route exact path='/login' component={LoginUser} />
     </Switch>

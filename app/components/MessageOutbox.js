@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import {fetchAllMessages, deleteSingleMessage} from '../reducers/reducers_messages_receive'
+import {fetchAllSentMessages, deleteSingleSentMessage} from '../reducers/reducers_messages_send'
 import {List, ListItem} from 'material-ui/List';
 import Divider from 'material-ui/Divider';
 import Subheader from 'material-ui/Subheader';
@@ -34,9 +34,9 @@ class MessageInbox extends Component {
         return (
             <div>
               <List>
-                <Subheader>Received Messages</Subheader>
+                <Subheader>Sent Messages</Subheader>
                 
-                {this.props.received.length?this.props.received.map(messageObj => {
+                {this.props.sent.length?this.props.sent.map(messageObj => {
                     const rightIconMenu = (
                         <IconMenu iconButtonElement={iconButtonElement}>
                           {/*<MenuItem>Reply</MenuItem>
@@ -52,14 +52,15 @@ class MessageInbox extends Component {
                         <ListItem  
                             leftAvatar={<Avatar src="images/kerem-128.jpg" />} 
                             rightIconButton={rightIconMenu}
-                            primaryText={messageObj.payer?`${messageObj.id}.  From: ${messageObj.payer.fullName} (${messageObj.payer.phone})`:'No transaction created for this message'}
+                            primaryText={messageObj.payee?`${messageObj.id}. To: ${messageObj.payee.fullName} (${messageObj.payee.phone})`:'No transaction created for this message'}
                             initiallyOpen={false}
                             primaryTogglesNestedList={true}
                             nestedItems={
-                                messageObj.Transactions.filter(trans=>trans.paymentType).map(trans => 
+                                messageObj.Transactions.map(trans => 
                                     <ListItem key={`trans-${trans.id}`} 
-                                              primaryText={`${trans.id}.  ${trans.status}. $${trans.amount} received via ${trans.paymentType.platform}`}
-                                              
+                                    primaryText={trans.paymentType?`${trans.id}.  ${trans.status}. $${trans.amount} sent via ${trans.paymentType.platform}`:
+                                    `${trans.id}.  ${trans.status}. $${trans.amount} sent via [invalid payment type]`}
+                                    secondaryText={`Original message: ${messageObj.body}`}
                                     />
                                 )
                             }
@@ -74,15 +75,15 @@ class MessageInbox extends Component {
         )
     }
 }
-const mapStateToProps = ({received}) => ({
-    received
+const mapStateToProps = ({sent}) => ({
+    sent
 })
 const mapDispatchToProps = (dispatch) => ({
     getMessages() {
-        dispatch(fetchAllMessages())
+        dispatch(fetchAllSentMessages())
     },
     deleteMessage(messageId) {
-        dispatch(deleteSingleMessage(messageId))
+        dispatch(deleteSingleSentMessage(messageId))
     }
 })
 

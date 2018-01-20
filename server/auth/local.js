@@ -24,7 +24,7 @@ router.post('/logout', (req, res, next) => {
     res.send(204)
 })
 router.get('/me', (req, res, next) => {
-    console.log(req.user, 'user')
+    //console.log(req.user, 'user')
     res.json(req.user)
 })
 
