@@ -9,15 +9,12 @@ class Paypal extends Platform {
         console.log(this.client);
     }
     
-    sendPayment(payer, payee, amount, message, transactionId, cb) {
-        //console.log("cb in paypal", cb)
+    sendPayment(payer, payee, amount, message, transactionId) {
         console.log ("sending message in paypal: ", payer.paymentType.authkey, payee.paymentType.authkey);
         const paymentObj = this.generatePaymentObject(payer.paymentType.authkey, payee.paymentType.authkey, amount, message);
         const paymentRequest = new paypalClient.PaymentCreateRequest();
         paymentRequest.requestBody(paymentObj);
         return this.client.execute(paymentRequest);
-        //const callbackFunc = super.generateCallbackFunction(payer, payee, amount, transactionId, cb);
-        //paypalClient.payment.create(paymentObj, callbackFunc)
     }
     
     generatePaymentObject (fromEmail, toEmail, amount, message) {

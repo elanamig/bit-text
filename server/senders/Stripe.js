@@ -15,8 +15,18 @@ class Stripe extends Platform {
         //         console.log(charge)
         //         callbackFunc(null, charge)
         //     })
-        //     .catch (err => callbackFunc(err, null))     
-        callbackFunc(null, "SUCCESSFUL PAYMENT")  
+        //     .catch (err => callbackFunc(err, null))  
+        const resolve = () => console.log("resoved");
+        const reject = () => console.log("reject");
+        return new Promise((resolve, reject) => {
+            resolve({
+                result: {
+                    state: 'created',
+                    message: `successfully sent $${amount} to ${payee.fullName} from ${payer.fullName}`,
+                    id: `${new Date().getTime()}`
+                }
+            })
+        })   
     }
     generatePaymentObject(toStripe, paymentAmt) {
         return {

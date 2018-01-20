@@ -32,7 +32,7 @@ const paymentType = [
         isDefault: 'true'
     },
     {
-        platform: 'DWOLLA',
+        platform: 'STRIPE',
         authkey: 'b0ab9549-6e22-4734-a5bb-3e22c6f77c8f',
         isDefault: 'false'
     },
@@ -50,6 +50,11 @@ const paymentType = [
         platform: 'PAYPAL',
         authkey: 'bittext123@gmail.com',
         isDefault: 'true'
+    },
+    {
+        platform: 'PAYPAL',
+        authkey: 'Some Really Crazy Auth Key Goes Here',
+        isDefault: 'false'
     }
 ]
 const messages = [
