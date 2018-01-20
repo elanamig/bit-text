@@ -1,22 +1,30 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {Link} from 'react-router-dom';
+import {withRouter} from 'react-router';
+import {Link, Route, Switch} from 'react-router-dom';
 import SendMessage from './SendMessage';
 import MessageInbox from './MessageInbox';
 import MessageOutbox from './MessageOutbox';
+import AccountView from './AccountView';
 import SignupUser from './SignupUser';
 import {fetchCurrentUser, logoutUser} from '../reducers/reducers_login_user';
-import { Image, Segment, Menu, Header, Container, Button, Visibility, Icon } from 'semantic-ui-react'
+import { Image, Segment, Menu, Header, Container, Button, Visibility, Icon, MenuItem } from 'semantic-ui-react'
+import LoginUser from './LoginUser'
+import MainBody from './MainBody'
 import Typist from 'react-typist';
 
 class Root extends Component {
   componentDidMount() {
     this.props.fetchInitialData()
   }
+
+
+
   render() {
     console.log( Object.keys(this.props.login).length)
+    const link = this.props.location.pathname.slice(1);
+    console.log("RENDER TRIGGERED")
     return(
-      <div>
         <Segment
         inverted
         textAlign='center'
@@ -25,54 +33,33 @@ class Root extends Component {
       >
         <Container>
           <Menu inverted pointing secondary size='large'>
-            <Menu.Item active>Home</Menu.Item>
-            <Menu.Item><Link to='/inbox'>Inbox</Link></Menu.Item>
-            <Menu.Item><Link to='/outbox'>Outbox</Link></Menu.Item>
-            <Menu.Item><a href="https://github.com/ShmuelLotman/BitText">Github Source</a></Menu.Item>
-            <Menu.Item position='right'>
+            <MenuItem active={!link.length}><Link to='/'>Home</Link></MenuItem>
+            <MenuItem active={link==='inbox'}><Link to='/inbox'>Inbox</Link></MenuItem>
+            <MenuItem active={link==='outbox'}><Link to='/outbox'>Outbox</Link></MenuItem>
+            <MenuItem><a href="https://github.com/ShmuelLotman/BitText">Github Source</a></MenuItem>
+            <MenuItem position='right'>
             {
-              !this.props.login.currentUser  ? <Link to='/login'><Button inverted>Log in</Button></Link>
+              !this.props.login.currentUser.email  ? <Link to='/login'><Button inverted>Log in</Button></Link>
               : <Button inverted onClick={() => this.props.logout()}>Log Out</Button>
             } 
             {
-              !this.props.login.currentUser  ? <Link to='/signup'><Button inverted>Sign Up</Button></Link>
+              !this.props.login.currentUser.email  ? <Link to='/signup'><Button inverted>Sign Up</Button></Link>
               : <Link to='/account'><Button style={{ marginLeft: '0.5em' }} inverted>Account</Button></Link>
             } 
               
-            </Menu.Item>
+            </MenuItem>
           </Menu>
         </Container>
-
-        <Container text>
-          <Header
-            as='h1'
-            inverted
-            style={{ fontSize: '4em', fontWeight: 'normal', marginBottom: 0, marginTop: '3em' }}
-          ><Typist cursor={{hideWhenDone: true}}>
-          <span>The Era of A Dozen Scattered Payment Apps is Over.</span>
-              <Typist.Backspace count={50} delay={1000} />
-            <span>All Your Transactions, In One Place, Over Secure Text. </span>
-            <Typist.Backspace count={59} delay={1000} />
-            <span>Welcome to BitText.</span>
-        </Typist>
-           </Header>
-          <Header
-            as='h2'
-            content='Pay The Convenient Way.'
-            inverted
-            style={{ fontSize: '1.7em', fontWeight: 'normal' }}
-          />
-          <Button primary size='huge'>
-            Get Started
-            <Icon name='right arrow' />
-          </Button>
-        </Container>
+          <Switch>
+            <Route exact path='/' component={MainBody}/>
+            <Route exact path='/sendMessage' component={SendMessage} />
+            <Route exact path='/inbox'  component={MessageInbox} />
+            <Route exact path='/outbox' component={MessageOutbox} />
+            <Route exact path='/signup' component={SignupUser} />
+            <Route exact path='/login' component={LoginUser} />
+            <Route exact path='/account' component = {AccountView} />
+          </Switch>
       </Segment>
-
-      
-      </div>
-
-      
     )
   }
 }
@@ -86,4 +73,4 @@ const mapDispatch = dispatch => ({
   }
 });
 
-export default connect(mapState, mapDispatch)(Root)
+export default withRouter(connect(mapState, mapDispatch)(Root))

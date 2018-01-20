@@ -9,6 +9,8 @@ apiRouter.get('/', (req, res, next) => {
     })
     .catch(next)
 })
+
+
 apiRouter.post('/', (req, res, next) => {
     client.validationRequests
     .create({

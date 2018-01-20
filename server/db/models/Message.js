@@ -31,7 +31,17 @@ Message.findAllByUserId = (userId, isPayer, isPayee) => {
     else if (isPayee) where = { payeeId: userId}
     else if (isPayer) where = { payerId: userId }
     
-    return Message.findAll({where, order: [['createdAt', 'DESC']]})
+    return Message.findAll({
+        where, 
+        order: [['createdAt', 'DESC']],
+        include: [
+            {model: User, as: 'payer' , attributes: ['fullName', 'email', 'phone']},
+            {model: Transaction, include: [
+                {model: PaymentType, as: 'paymentType', attributes: ['platform']}
+            ], where: {payeeId: userId}
+            }
+        ],
+    })
 }
 
 Message.findAllPayee = (userId) => {
@@ -47,7 +57,7 @@ Message.findAllPayee = (userId) => {
             {model: User, as: 'payer' , attributes: ['fullName', 'email', 'phone']},
             {model: Transaction, include: [
                 {model: PaymentType, as: 'paymentType', attributes: ['platform']}
-            ], where: {payeeId: userId}, required: false
+            ], where: {payeeId: userId}
             }
         ],
         order: [['createdAt', 'DESC']]

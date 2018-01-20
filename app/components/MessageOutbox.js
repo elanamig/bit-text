@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
+import {withRouter} from 'react-router';
 import {fetchAllSentMessages, deleteSingleSentMessage} from '../reducers/reducers_messages_send'
 import {List, ListItem} from 'material-ui/List';
 import Divider from 'material-ui/Divider';
@@ -10,6 +11,7 @@ import IconButton from 'material-ui/IconButton';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
+import Paper from 'material-ui/Paper'
 
 class MessageInbox extends Component {
     constructor(props) {
@@ -28,11 +30,14 @@ class MessageInbox extends Component {
               <MoreVertIcon color={grey400} />
             </IconButton>
           );
-          
+          const paperStyle = {
+            background: 'white',
+            margin: '3em'
+        }
 
         console.log(this.props.received)
         return (
-            <div>
+            <Paper style={paperStyle} zDepth={3}>
               <List>
                 <Subheader>Sent Messages</Subheader>
                 
@@ -56,13 +61,14 @@ class MessageInbox extends Component {
                             initiallyOpen={false}
                             primaryTogglesNestedList={true}
                             nestedItems={
-                                messageObj.Transactions.map(trans => 
-                                    <ListItem key={`trans-${trans.id}`} 
-                                    primaryText={trans.paymentType?`${trans.id}.  ${trans.status}. $${trans.amount} sent via ${trans.paymentType.platform}`:
-                                    `${trans.id}.  ${trans.status}. $${trans.amount} sent via [invalid payment type]`}
-                                    secondaryText={`Original message: ${messageObj.body}`}
-                                    />
-                                )
+                                messageObj.Transactions.map(trans => {
+                                    let mainText = trans.paymentType?`${trans.status}. $${trans.amount} sent via ${trans.paymentType.platform}.  Transaction id: ${trans.id}`:
+                                    `${trans.status}. $${trans.amount} sent via [invalid payment type].  Transaction id: ${trans.id}`
+
+                                    mainText = `${mainText} (Original message: ${messageObj.body})`
+                                
+                                    return <ListItem key={`trans-${trans.id}`} secondaryText={mainText} />
+                                })
                             }
                         />
                         <Divider inset={true} />
@@ -71,7 +77,7 @@ class MessageInbox extends Component {
                     )
                 }):<Subheader> No messages to display </Subheader>}
               </List>
-          </div>
+              </Paper>
         )
     }
 }
@@ -87,4 +93,4 @@ const mapDispatchToProps = (dispatch) => ({
     }
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(MessageInbox)
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(MessageInbox))

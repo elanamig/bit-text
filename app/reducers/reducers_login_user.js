@@ -46,11 +46,16 @@ export function logoutUser() {
         })
     }
 }
-export default function LoginReducer(state = {}, action) {
+
+const defaultState = {
+    currentUser: {},
+    loginErr: false
+}
+export default function LoginReducer(state = defaultState, action) {
     switch(action.type) {
         case LOGIN_USER: 
             return {
-                ...state, activeUser: action.user, loginErr: false
+                ...state, currentUser: action.user, loginErr: false
             }
         case LOGOUT_USER:
             return {
@@ -76,7 +81,7 @@ export const fetchCurrentUser = () => dispatch => {
     axios.get('/auth/local/me')
       .then(res => {
           console.log(res.data, 'this is the data')
-          dispatch(setCurrentUser(res.data))
+          dispatch(setCurrentUser(res.data.email?res.data:{}))
         })
       .catch(err => console.error('Fetching current user failed', err));
   };
