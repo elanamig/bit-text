@@ -1,10 +1,13 @@
 import React, {Component} from 'react';
 import {Field, reduxForm} from 'redux-form';
+import {withRouter} from 'react-router';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { loginUser } from '../reducers/reducers_login_user';
+import Paper from 'material-ui/Paper'
+import {Container } from 'semantic-ui-react'
 class LoginUser extends Component {
-    renderField(field) {
+    renderField(field, password) {
         const { meta: {touched, error} } = field;
         const className = `form-group ${touched && error ? 'has-danger' : ''}`
         return (
@@ -12,7 +15,7 @@ class LoginUser extends Component {
                 <label>{field.label}</label>
                 <input
                     className="form-control"
-                    type="text"
+                    type={field.type}
                     {...field.input}
                 />
                 <div className="text-help">
@@ -27,22 +30,42 @@ class LoginUser extends Component {
     render() { 
         console.log(this.props)
         const { handleSubmit } = this.props;
+
+        const style = {
+            height: 275,
+            width: 350,
+            margin: 'auto',
+            textAlign: 'center',
+          };
+
+        const formStyle ={
+            padding: '3em',
+        }
+
+        const containerStyle = {
+            padding: '4em'
+        }
         return (
-            <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
-                <Field 
-                    name="email"
-                    label="Email Address"
-                    component={this.renderField}
-                />
-                <Field 
-                    name="password"
-                    label="Password"
-                    type="password"
-                    component={this.renderField}
-                />
-                {this.props.loginErr && <strong>Invalid username or password!</strong>}
-                <button type="submit" className="btn btn-primary">Submit</button>
-            </form>
+            <Container style={containerStyle}>
+                <Paper style={style} zDepth={3}>
+                    <form style={formStyle} onSubmit={handleSubmit(this.onSubmit.bind(this))}>
+                        <Field 
+                            name="email"
+                            label="Email Address"
+                            type="text"
+                            component={this.renderField}
+                        />
+                        <Field 
+                            name="password"
+                            label="Password"
+                            type="password"
+                            component={this.renderField}
+                        />
+                        {this.props.loginErr && <strong>Invalid username or password!</strong>}
+                        <button type="submit" className="btn btn-primary">Submit</button>
+                    </form>
+                </Paper>
+            </Container>
         )
     }
 }
@@ -74,5 +97,5 @@ export default reduxForm({
     form: 'LoginUser',
     validate
 })(
-    connect(mapState, mapDispatch)(LoginUser)
+    withRouter(connect(mapState, mapDispatch)(LoginUser))
 )

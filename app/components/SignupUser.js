@@ -2,8 +2,11 @@ import React, {Component} from 'react';
 import {Field, reduxForm} from 'redux-form';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import {withRouter} from 'react-router';
 import { postUser } from '../reducers/reducers_add_user';
 import store from '../store';
+import Paper from 'material-ui/Paper'
+import {Container } from 'semantic-ui-react'
 class SignupUser extends Component {
     renderField(field) {
         const { meta: {touched, error} } = field;
@@ -28,8 +31,26 @@ class SignupUser extends Component {
     }
     render() { 
         const { handleSubmit } = this.props;
+
+        const style = {
+            height: 480,
+            width: 350,
+            margin: 'auto',
+            textAlign: 'center',
+          };
+
+        const formStyle ={
+            padding: '3em',
+        }
+
+        const containerStyle = {
+            padding: '4em'
+        }
+
         return (
-            <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
+            <Container style={containerStyle}>
+                <Paper style={style} zDepth={3}>
+            <form onSubmit={handleSubmit(this.onSubmit.bind(this))} style={formStyle}>
                 <Field 
                     name="fullName"
                     label="Full Name"
@@ -57,6 +78,8 @@ class SignupUser extends Component {
                 />
                 <button type="submit" className="btn btn-primary">Submit</button>
             </form>
+            </Paper>
+            </Container>
         )
     }
 }
@@ -86,5 +109,5 @@ export default reduxForm({
     form: 'SignupUser',
     validate
 })(
-    connect(null, null)(SignupUser)
+    withRouter(connect(null, null)(SignupUser))
 )
