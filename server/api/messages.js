@@ -5,9 +5,13 @@ const User = require('../db/models/User');
 router.get('/', (req, res, next) => {
     console.log("got message request.  userLoggedIn", req.user?"yes":"no")
     if (req.user) {  
+        console.log("looking for payee?",req.query.payee==='true')
         const find = req.query.payee === 'true'?Message.findAllPayee(req.user.id):Message.findAllPayer(req.user.id)
         find
-        .then(messages => res.json(messages))
+        .then(messages => {
+            console.log("retrieved messages", messages)
+            res.json(messages)
+        })
         .catch(next)
     } else {
         res.send(null);

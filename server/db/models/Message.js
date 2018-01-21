@@ -18,7 +18,11 @@ const Message = db.define('Message', {
         type: Sequelize.TEXT,
         allowNull: true
     },
-    display: {
+    displayPayee: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true
+    },
+    displayPayer: {
         type: Sequelize.BOOLEAN,
         defaultValue: true
     }
@@ -48,16 +52,16 @@ Message.findAllPayee = (userId) => {
     return Message.findAll ({ 
         where: {
             payeeId: userId, 
-            payerId: {
-                [Op.not]: null
-            },
-            display: true
+            // payerId: {
+            //     [Op.not]: null
+            // },
+            displayPayee: true
         },
         include: [
             {model: User, as: 'payer' , attributes: ['fullName', 'email', 'phone']},
             {model: Transaction, include: [
                 {model: PaymentType, as: 'paymentType', attributes: ['platform']}
-            ], where: {payeeId: userId}
+            ], where: {payeeId: userId, status:'Completed'}
             }
         ],
         order: [['createdAt', 'DESC']]
@@ -68,10 +72,10 @@ Message.findAllPayer = (userId) => {
     return Message.findAll ({ 
         where: {
             payerId: userId, 
-            payeeId: {
-                [Op.not]: null
-            },
-            display: true
+            // payeeId: {
+            //     [Op.not]: null
+            // },
+            displayPayer: true
         },
         include: [
             {model: User, as: 'payee' , attributes: ['fullName', 'email', 'phone']},
@@ -94,14 +98,26 @@ Message.findByIdAndUserId = (id, userId) => {
 }
 
 Message.removeFromView = (userId, id, payee) => {
-    const where = payee?{
-        id,
-        payeeId: userId
-    }:{
-        id,
-        payerId: userId
+    let where, display
+    if (payee){
+        where = {
+            id,
+            payeeId: userId
+        }
+        display = {
+            displayPayee:false
+        }
+    } else {
+        where = {
+            id,
+            payerId: userId
+        },
+        display = {
+            displayPayer: false
+        }
     }
-    return Message.update({display:false},{where}).then(msg => {
+    
+    return Message.update(display,{where}).then(msg => {
         console.log("updated message to display false?", msg);
         return msg;
     })

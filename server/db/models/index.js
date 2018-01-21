@@ -19,7 +19,6 @@ PaymentType.belongsTo(User, {as: 'user'});
 Transaction.belongsTo(User, {as: 'payer'});
 Transaction.belongsTo(User, {as: 'payee'});
 Transaction.belongsTo(PaymentType, {as: 'paymentType'});  
-
 Message.hasMany(Transaction)
 //Transaction.belongsTo(Message, {as: 'message'});
 Wallet.belongsTo(Transaction);
