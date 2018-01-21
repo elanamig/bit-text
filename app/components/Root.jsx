@@ -13,6 +13,8 @@ import LoginUser from './LoginUser'
 import MainBody from './MainBody'
 import StatsView from './StatsView'
 import Typist from 'react-typist';
+import PaypalSignupMK from './PaypalSignupMK';
+import StripeSignupMK from './StripeSignupMK';
 
 class Root extends Component {
   componentDidMount() {
@@ -38,6 +40,16 @@ class Root extends Component {
             <MenuItem active={link==='inbox'}><Link to='/inbox'>Inbox</Link></MenuItem>
             <MenuItem active={link==='outbox'}><Link to='/outbox'>Outbox</Link></MenuItem>
             <MenuItem active={link==='stats'}><Link to='/stats'>Stats</Link></MenuItem>
+            {
+              this.props.login.currentUser.email ?
+              <MenuItem active={link==='paypal'}><Link to='/paypal'>Add Paypal</Link></MenuItem>
+              : null
+            }
+            {
+              this.props.login.currentUser.email ?
+              <MenuItem active={link==='stripe'}><Link to='/stripe'>Add Stripe</Link></MenuItem>
+              : null
+            }
             <MenuItem><a href="https://github.com/ShmuelLotman/BitText">Github Source</a></MenuItem>
             <MenuItem position='right'>
             {
@@ -53,7 +65,7 @@ class Root extends Component {
           </Menu>
         </Container>
           <Switch>
-            <Route exact path='/' component={MainBody}/>
+            <Route exact path='/' render={() => <MainBody {...this.props.login.currentUser} />} />
             <Route exact path='/sendMessage' component={SendMessage} />
             <Route exact path='/inbox'  component={MessageInbox} />
             <Route exact path='/outbox' component={MessageOutbox} />
@@ -61,6 +73,8 @@ class Root extends Component {
             <Route exact path='/login' component={LoginUser} />
             <Route exact path='/account' component = {AccountView} />
             <Route exact path='/stats' component = {StatsView} />
+            <Route exact path='/paypal' render={ () => <PaypalSignupMK user={this.props.login.currentUser.email}/>} />
+            <Route exact path='/stripe' render={ () => <StripeSignupMK user={this.props.login.currentUser.email}/>} />
           </Switch>
       </Segment>
     )

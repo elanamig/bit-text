@@ -7,6 +7,7 @@ import { postUser } from '../reducers/reducers_add_user';
 import store from '../store';
 import Paper from 'material-ui/Paper'
 import {Container } from 'semantic-ui-react'
+import { loginUser } from '../reducers/reducers_login_user';
 class SignupUser extends Component {
     renderField(field) {
         const { meta: {touched, error} } = field;
@@ -26,12 +27,11 @@ class SignupUser extends Component {
         )
     }
     onSubmit(values) {
-      const postAction =  postUser(values);
-        store.dispatch(postAction)
+      this.props.loginuser(values)
     }
     render() { 
         const { handleSubmit } = this.props;
-
+        console.log(this.props, 'signupprops')
         const style = {
             height: 480,
             width: 350,
@@ -105,9 +105,17 @@ const validate = (values) => {
     }
     return errors
 }
+const mapDispatch = (dispatch, ownProps) => {
+    return {
+        loginuser(user) {
+            dispatch(loginUser(user, ownProps.history, 'signup'))
+        }
+    }
+}
 export default reduxForm({
     form: 'SignupUser',
     validate
 })(
-    withRouter(connect(null, null)(SignupUser))
+    withRouter(connect(mapDispatch, null)(SignupUser))
 )
+

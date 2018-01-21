@@ -14,7 +14,7 @@ router.post('/login', (req, res, next) => {
       req.login(user, (err) => {
           if(err) console.log(err, 'this is the error')
           else {
-              //console.log("sending user", user)
+              console.log("sending user", user)
               res.json(user)
           }
       })
@@ -23,7 +23,15 @@ router.post('/login', (req, res, next) => {
   })
   .catch(next);
 })
-
+router.post('/signup', (req, res, next) => {
+    Users.create(req.body)
+    .then(user => {
+        req.login((user, err) => {
+            if(err) console.log(err, 'this is a signup err')
+            res.json(user)
+        })
+    })
+})
 router.post('/logout', (req, res, next) => {
     req.logout()
     res.send(204)

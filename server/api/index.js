@@ -8,6 +8,7 @@ apiRouter.use('/test', require ('./test'));
 apiRouter.use('/messages', require('./messages'))
 apiRouter.use('/accounts', require('./accounts'))
 apiRouter.use('/stats', require('./stats'))
+apiRouter.use('/payments', require('./payments'))
 apiRouter.get('/hello', (req, res) => {
 	console.log(req.session)
 	res.send('laksdjf')

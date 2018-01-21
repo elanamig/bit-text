@@ -22,15 +22,15 @@ const loginErr = () => ({
     type: LOGIN_ERR
 })
 
-export function loginUser(user, history) {
+export function loginUser(user, history, method) {
     return function thunk(dispatch) {
-        return axios.post('/auth/local/login', user)
+        return axios.post(`/auth/local/${method}`, user)
         .then(res => res.data)
         .then(data => {
             if (typeof data === 'string' && data.indexOf('Invalid') >= 0) {
                 dispatch (loginErr())
             } else {
-                const action = login(user);
+                const action = login(data);
                 dispatch(action)
                 history.push('/')
             }
@@ -40,7 +40,7 @@ export function loginUser(user, history) {
 }
 export function logoutUser() {
     return function thunk(dispatch) {
-        return axios.post('/auth/local/logout')
+        return axios.post(`/auth/local/logout`)
         .then(() => {
             dispatch(logout())
         })

@@ -3,10 +3,10 @@ import {Field, reduxForm} from 'redux-form';
 import {withRouter} from 'react-router';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { loginUser } from '../reducers/reducers_login_user';
+import { addPaymentTypetoAccount } from '../reducers/reducers_connect_payments';
 import Paper from 'material-ui/Paper'
 import {Container } from 'semantic-ui-react'
-class LoginUser extends Component {
+class PaypalSignupMK extends Component {
     renderField(field, password) {
         const { meta: {touched, error} } = field;
         const className = `form-group ${touched && error ? 'has-danger' : ''}`
@@ -25,10 +25,10 @@ class LoginUser extends Component {
         )
     }
     onSubmit(values) {
-      this.props.loginuser(values)
+      this.props.addPayment(values.email, values.password, values.isDefault)
     }
     render() { 
-        console.log(this.props)
+        console.log(this.props, 'paypal props')
         const { handleSubmit } = this.props;
 
         const style = {
@@ -45,28 +45,37 @@ class LoginUser extends Component {
         const containerStyle = {
             padding: '4em'
         }
-        return (
+        return this.props.user ? 
+         (
+            
             <Container style={containerStyle}>
                 <Paper style={style} zDepth={3}>
                     <form style={formStyle} onSubmit={handleSubmit(this.onSubmit.bind(this))}>
                         <Field 
                             name="email"
-                            label="Email Address"
+                            label="Paypal Email"
                             type="text"
                             component={this.renderField}
                         />
                         <Field 
                             name="password"
-                            label="Password"
+                            label="Paypal Password"
                             type="password"
                             component={this.renderField}
                         />
+                        <Field 
+                            name="isDefault"
+                            label="Set this account as default?"
+                            type= "text"
+                            component={this.renderField}
+                        />
+
                         {this.props.loginErr && <strong>Invalid username or password!</strong>}
                         <button type="submit" className="btn btn-primary">Submit</button>
                     </form>
                 </Paper>
-            </Container>
-        )
+            </Container> ) : <h1>please sign in to add payment type</h1>
+        
     }
 }
 
@@ -80,22 +89,24 @@ const validate = (values) => {
     if(!values.password) {
         errors.password = 'enter some password please!'
     }
+    if(!values.isDefault) {
+        errors.isDefault = 'please choose to set as default by saying yes or no'
+    }
     return errors
 }
 const mapDispatch = (dispatch, ownProps) => {
     return {
-        loginuser(user) {
-            dispatch(loginUser(user, ownProps.history, 'login'))
+        addPayment(authkey, password, isDefault) {
+            if(isDefault === 'yes') isDefault = true 
+            else isDefault = false
+            dispatch(addPaymentTypetoAccount({authkey, password, isDefault, platform: 'PAYPAL'}, ownProps.history))
         }
     }
 }
 
-const mapState = state => ({
-    loginErr: state.login.loginErr
-})
 export default reduxForm({
     form: 'LoginUser',
     validate
 })(
-    withRouter(connect(mapState, mapDispatch)(LoginUser))
+    withRouter(connect(null, mapDispatch)(PaypalSignupMK))
 )
