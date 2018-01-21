@@ -57,7 +57,7 @@ class MessageInbox extends Component {
                         <ListItem  
                             leftAvatar={<Avatar src="images/kerem-128.jpg" />} 
                             rightIconButton={rightIconMenu}
-                            primaryText={messageObj.payee?`${new Date(messageObj.createdAt).toLocaleString()} - To: ${messageObj.payee.fullName} (${messageObj.payee.phone})`:'No transaction created for this message'}
+                            primaryText={messageObj.payee?`${new Date(messageObj.createdAt).toLocaleString()} - To: ${messageObj.payee.fullName} (${messageObj.payee.phone})`:`(Original message: ${messageObj.body}) No transaction created for this message`}
                             initiallyOpen={false}
                             primaryTogglesNestedList={true}
                             nestedItems={

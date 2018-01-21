@@ -184,7 +184,7 @@ const handleSuccessfulPayment = (payer, payee, amount, payment) => {
 
 const parseMessage = createdMessage => {
     //some processing to be done here
-    //console.log("created message", createdMessage.id);
+    //console.log("created message", createdMessage.body);
     const fields = createdMessage.body.split(' ');
     //console.log("Fields", fields)
     return ({
