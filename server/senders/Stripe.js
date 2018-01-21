@@ -30,7 +30,7 @@ class Stripe extends Platform {
     }
     generatePaymentObject(toStripe, paymentAmt) {
         return {
-            amount: '20',
+            amount: paymentAmt,
             currency: 'usd',
             source: 'tok_visa',
             destination: {
