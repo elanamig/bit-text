@@ -15,6 +15,7 @@ import StatsView from './StatsView'
 import Typist from 'react-typist';
 import PaypalSignupMK from './PaypalSignupMK';
 import StripeSignupMK from './StripeSignupMK';
+import Validation from './Validation';
 
 class Root extends Component {
   componentDidMount() {
@@ -75,6 +76,7 @@ class Root extends Component {
             <Route exact path='/stats' component = {StatsView} />
             <Route exact path='/paypal' render={ () => <PaypalSignupMK user={this.props.login.currentUser.email}/>} />
             <Route exact path='/stripe' render={ () => <StripeSignupMK user={this.props.login.currentUser.email}/>} />
+            <Route exact path='/validation' component={Validation} />
           </Switch>
       </Segment>
     )

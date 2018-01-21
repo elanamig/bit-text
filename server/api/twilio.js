@@ -75,10 +75,10 @@ apiRouter.post('/sms', (req, res, next) => {
         console.log("We got this far in twilio.js", transactionInfo);
 
         payerAndPayeePromise.then (payerAndPayee => {
-            //console.log("user and payment information", payerAndPayee)
+            console.log("user and payment information", payerAndPayee)
             const payer = payerAndPayee[0];
             const payee = payerAndPayee[1];
-            //console.log("got payer and payee", payer, payee)
+            console.log("got payer and payee", payer, payee)
             //4.a - if either user is missing or missing a payment type, send appropriate error messages
             if (! payee) {
                 return handleRejectedPayment(payer, req.body.to, transactionInfo.transactionAmount, `payee not found...`)

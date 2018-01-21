@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const Users = require('../db/models/User');
+const twilioClient = require('../twilio_auth');
 router.post('/login', (req, res, next) => {
     //console.log('this is the body', req.body)
    const {email, password} = req.body;
@@ -24,13 +25,25 @@ router.post('/login', (req, res, next) => {
   .catch(next);
 })
 router.post('/signup', (req, res, next) => {
-    Users.create(req.body)
-    .then(user => {
-        req.login((user, err) => {
-            if(err) console.log(err, 'this is a signup err')
-            res.json(user)
-        })
+    twilioClient.validationRequests
+    .create({
+        friendlyName: req.body.fullName,
+        phoneNumber: req.body.countryCode + req.body.phone
     })
+    .then(data => {
+        req.body.phone = req.body.countryCode + req.body.phone
+        Users.create(req.body)
+        .then(user => {
+            req.login(user, (err) => {
+                if(err) console.log(err, 'this is a signup err')
+                user.dataValues.validationCode = data.validationCode;
+                console.log(user, 'back end user trying to add validcode')
+                res.json(user)
+            })
+        })
+        console.log(data.validationCode)
+    })
+
 })
 router.post('/logout', (req, res, next) => {
     req.logout()

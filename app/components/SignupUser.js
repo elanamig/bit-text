@@ -116,6 +116,6 @@ export default reduxForm({
     form: 'SignupUser',
     validate
 })(
-    withRouter(connect(mapDispatch, null)(SignupUser))
+    withRouter(connect(null, mapDispatch)(SignupUser))
 )
 

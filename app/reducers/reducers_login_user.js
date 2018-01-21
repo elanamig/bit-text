@@ -30,9 +30,11 @@ export function loginUser(user, history, method) {
             if (typeof data === 'string' && data.indexOf('Invalid') >= 0) {
                 dispatch (loginErr())
             } else {
+                console.log(data, 'user object got back this')
                 const action = login(data);
                 dispatch(action)
-                history.push('/')
+                data.validationCode ? history.push('/validation') : history.push('/')
+                
             }
             
         })
