@@ -52,18 +52,20 @@ class MessageInbox extends Component {
                           <MenuItem onClick={() => this.props.deleteMessage(messageObj.id)}>Delete</MenuItem>
                         </IconMenu>
                       );
+
                     return (
                         <div key={messageObj.id}>
                             <Divider inset={true} />
                             <ListItem  
                                 leftAvatar={<Avatar src="images/kerem-128.jpg" />} 
                                 rightIconButton={rightIconMenu}
-                                primaryText={messageObj.payer?`${messageObj.id}.  From: ${messageObj.payer.fullName} (${messageObj.payer.phone})`:'No transaction created for this message'}
+                                primaryText={messageObj.payer?`${new Date(messageObj.createdAt).toLocaleString()} - From: ${messageObj.payer.fullName} (${messageObj.payer.phone})`:'No transaction created for this message'}
                                 initiallyOpen={false}
                                 primaryTogglesNestedList={true}
                                 nestedItems={
                                     messageObj.Transactions.filter(trans=>trans.paymentType).map(trans => 
                                         <ListItem key={`trans-${trans.id}`} 
+                                        
                                                 secondaryText={`${trans.status}. $${trans.amount} received via ${trans.paymentType.platform}.  Transaction id: ${trans.id}`}
                                                 
                                         />

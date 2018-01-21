@@ -69,8 +69,8 @@ const messages = [
         sender: '+14142436597',
         recipient: '+19174594647',
         body: 'Paypal Elana Abelev 30.00',
-        payerId: 2,
-        payeeId: 1
+        payerId: 1,
+        payeeId: 2
     }
 ]
 

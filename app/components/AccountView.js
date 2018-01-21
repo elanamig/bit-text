@@ -2,7 +2,9 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import Paper from 'material-ui/Paper'
-import {Container, List, Subheader } from 'semantic-ui-react';
+import {Container } from 'semantic-ui-react';
+import Subheader from 'material-ui/Subheader';
+import {List, ListItem} from 'material-ui/List';
 import {loadUserAccountInfo} from '../reducers/reducers_load_account'
 
 class AccountView extends Component {
@@ -28,26 +30,23 @@ class AccountView extends Component {
             console.log("right before account view renter", this.props);
             return <Container style={containerStyle}>
                         <Paper style={style} zDepth={3}>
+                        <div>{this.props.user.fullName}</div>
+                        <div>{this.props.user.email}</div>
+                        <div>{this.props.user.phone}</div>
                             <List >
+                            <Subheader>Connected Payment Platforms</Subheader>
                                 {
-                                    this.props.messages.map (messageObj => {
-                                        <ListItem  
-            
-                                            primaryText={messageObj.payee?`${messageObj.id}. To: ${messageObj.payee.fullName} (${messageObj.payee.phone})`:'No transaction created for this message'}
+                                    this.props.paymentTypes.map (payType => 
+                                        {
+                                            const isDefault = payType.isDefault?'(default)':''
+                                        return <ListItem key={payType.id} 
+                                            primaryText={`${payType.platform} ${isDefault}`}
                                             initiallyOpen={false}
                                             primaryTogglesNestedList={true}
-                                            nestedItems={
-                                                messageObj.Transactions.map(trans => {
-                                                    let mainText = trans.paymentType?`${trans.status}. $${trans.amount} sent via ${trans.paymentType.platform}.  Transaction id: ${trans.id}`:
-                                                    `${trans.status}. $${trans.amount} sent via [invalid payment type].  Transaction id: ${trans.id}`
-                
-                                                    mainText = `${mainText} (Original message: ${messageObj.body})`
-                                                
-                                                    return <ListItem key={`trans-${trans.id}`} secondaryText={mainText} />
-                                                })
-                                            }
+                                            nestedItems={[<ListItem key={payType.id} secondaryText={`Client ID: ${payType.authkey}`} />]  }
                                         />
-                                    })
+                                        }
+                                    )
                                 }
                             </List>
                         </Paper>
@@ -65,7 +64,7 @@ class AccountView extends Component {
 
 const mapState = state => ({
     currentUser: state.login?state.login.currentUser:{},
-    messages: state.account? state.account.messages: [],
+    paymentTypes: state.account? state.account.paymentTypes: [],
     user: state.account?state.account.user : {}
 })
 

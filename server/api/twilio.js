@@ -217,6 +217,13 @@ const sendTransaction = (payer, payee, transactionInfo) => {
 
 const  createTransaction = (payer, payee, /*paymentType,*/ MessageId, amount, status, comments) => {
     console.log("Creating transacton for message messageId, payer.id, payee.id", MessageId, payer.id, payee.id)
+    console.log("Is Payer Central User? ", payer===CentralUser)
+    let paymentTypeId;
+    if (payer === CentralUser) {
+        paymentTypeId = payee.paymentType?payee.paymentType.id:null;
+    } else {
+        paymentTypeId = payer.paymentType?payer.paymentType.id:null;
+    }
     const props = {
         status, 
         comments, 
@@ -224,7 +231,7 @@ const  createTransaction = (payer, payee, /*paymentType,*/ MessageId, amount, st
         payeeId: payee.id,
         payerId: payer.id,
         MessageId,
-        paymentTypeId: payer.paymentType?payer.paymentType.id:null
+        paymentTypeId
     }
 
     //if (paymentType) props['paymentTypeId'] = paymentType.id

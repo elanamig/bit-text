@@ -57,11 +57,12 @@ class MessageInbox extends Component {
                         <ListItem  
                             leftAvatar={<Avatar src="images/kerem-128.jpg" />} 
                             rightIconButton={rightIconMenu}
-                            primaryText={messageObj.payee?`${messageObj.id}. To: ${messageObj.payee.fullName} (${messageObj.payee.phone})`:'No transaction created for this message'}
+                            primaryText={messageObj.payee?`${new Date(messageObj.createdAt).toLocaleString()} - To: ${messageObj.payee.fullName} (${messageObj.payee.phone})`:'No transaction created for this message'}
                             initiallyOpen={false}
                             primaryTogglesNestedList={true}
                             nestedItems={
                                 messageObj.Transactions.map(trans => {
+                                    
                                     let mainText = trans.paymentType?`${trans.status}. $${trans.amount} sent via ${trans.paymentType.platform}.  Transaction id: ${trans.id}`:
                                     `${trans.status}. $${trans.amount} sent via [invalid payment type].  Transaction id: ${trans.id}`
 

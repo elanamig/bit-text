@@ -23,7 +23,7 @@ export const loadUserAccountInfo = () => dispatch => {
 
 const defaultState = {
     user: {},
-    messages: []
+    paymentTypes: []
 }
 
 export default (state = defaultState, action ) => {

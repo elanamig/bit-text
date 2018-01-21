@@ -11,6 +11,7 @@ import {fetchCurrentUser, logoutUser} from '../reducers/reducers_login_user';
 import { Image, Segment, Menu, Header, Container, Button, Visibility, Icon, MenuItem } from 'semantic-ui-react'
 import LoginUser from './LoginUser'
 import MainBody from './MainBody'
+import StatsView from './StatsView'
 import Typist from 'react-typist';
 
 class Root extends Component {
@@ -36,6 +37,7 @@ class Root extends Component {
             <MenuItem active={!link.length}><Link to='/'>Home</Link></MenuItem>
             <MenuItem active={link==='inbox'}><Link to='/inbox'>Inbox</Link></MenuItem>
             <MenuItem active={link==='outbox'}><Link to='/outbox'>Outbox</Link></MenuItem>
+            <MenuItem active={link==='stats'}><Link to='/stats'>Stats</Link></MenuItem>
             <MenuItem><a href="https://github.com/ShmuelLotman/BitText">Github Source</a></MenuItem>
             <MenuItem position='right'>
             {
@@ -58,6 +60,7 @@ class Root extends Component {
             <Route exact path='/signup' component={SignupUser} />
             <Route exact path='/login' component={LoginUser} />
             <Route exact path='/account' component = {AccountView} />
+            <Route exact path='/stats' component = {StatsView} />
           </Switch>
       </Segment>
     )

@@ -20,7 +20,7 @@ export const fetchAllSentMessages = () => dispatch => {
 }
 export const deleteSingleSentMessage = (id) => dispatch => {
     console.log(id, 'id')
-    axios.put(`/api/messages/${id}`,{display:false, payee:false})
+    axios.put(`/api/messages/${id}`,{display:false, payee:true})
     .then(msg => {
         dispatch(deleteSentMessage(msg?id:msg))
     })
